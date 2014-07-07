@@ -1,0 +1,20 @@
+<html>                                                                  
+ <head>                                                                  
+ <script type="text/javascript" src="jquery.js"></script>          
+ <script type="text/javascript">                                         
+  $(document).ready(function() {
+    $("#test_button").click ( function () {
+      alert($("#general_input").val() );
+    });
+ 
+ });                                    
+ </script>                                                               
+ </head>                                                                 
+ <body>                                                                  
+<textarea id="general_input" rows="8" cols="40">
+This is a textarea element.  The plan is to use these to gather user input.  Try putting some text in, and clicking test (which is a <button> element.  You should get an alert with whatever text is in this box.
+</textarea>
+<br />
+<button id="test_button">test</button>
+</body>                                                                 
+</html>

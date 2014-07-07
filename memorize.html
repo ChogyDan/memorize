@@ -1,0 +1,184 @@
+
+<html>                                                                  
+ <head> 
+ <meta http-equiv="content-type" content="text/html;charset=utf-8" />                                                                
+ <script type="text/javascript" src="jquery.js"></script>
+ <script type="text/javascript" src="underscore.js"></script>
+ <script type="text/javascript" src="helpercode.js"></script>
+
+ <script type="text/javascript">
+$(document).ready(function() {
+ 
+  var oddManOut = {
+    structure: "block",
+    text: "unsetup text",
+    title: "unsetup title",
+    line: 42,
+    buttonNames: ["name1", "name2", "nam3", "name4"],
+    setup: function(newTitle, newText, newLine) {
+      this.title = newTitle;
+      this.text = newText;
+      this.line = newLine;
+      var context = this.line-_.random(1,2);//for now, context will be of size 4, starting 1 to 2 before the line, except under certain cirumstances which follow
+      if (context>(this.text.length-4)){//if context ends up starting near the end of the text, adjust that
+        context = this.text.length-4;
+      }
+      if (context<0) { //if the text is too small, context will end up negative at this point, and should just point to the beggining.
+        context=0; 
+      }
+
+      this.display=[];
+      for (var count = 0; count < 4 && context + count < this.text.length; count++) {
+        if(context+count == this.line) {
+          this.display.push("?????");
+        } else {
+          this.display.push(this.text[context+count]);
+        }
+      };
+      this.display = this.display.join("\n");    
+
+      this.correctButton = _.random(0,3);
+      for (var i = 0, randomLine; i < 4; i++) {
+        if (i == this.correctButton) {
+          this.buttonNames[i] = this.text[this.line];
+        } else {
+          do { 
+            randomLine = _.random(0,this.text.length-1); 
+          }
+          while(randomLine == this.line);
+          this.buttonNames[i] = this.text[randomLine];
+        }
+      };
+    },
+    testedTitle: function() {
+      return this.title;
+    },
+    testedLine: function() {
+      return this.line;
+    },
+    testedTitle: function() {
+      return this.title;
+    },
+    scoreModifier: function() {
+
+    },
+    buttonsNotText: function() {
+      return true;
+    },
+    button: function(number) {
+      return this.buttonNames[number-1];
+    },
+    setGuiWith: function(text, type) {
+
+    },
+    processResults: function(buttonNumber) {
+      if(buttonNumber != undefined) {
+        return buttonNumber-1 == this.correctButton;
+      }
+
+    }
+  };//oddManOut
+
+
+  function saveMetrics(title, lineNumber, scoreModifier) {
+
+  }
+  function reward() {
+    $("#reward").show().delay(1000).slideUp( 300 );
+
+  }
+  function punish() {
+    $("#punish").show().delay(1000).slideUp( 300 );
+  }
+  {//strategyObject scope
+  var strategyObject;
+  $("#submit").click(function (e) {
+    strategyObject.processResults() ? reward() : punish();
+    saveMetrics(strategyObject.testedTitle(), 
+      strategyObject.testedLine(), 
+      strategyObject.scoreModifier() 
+      );
+    testPicker();
+  });
+  for (var i = 1; i <= 4; i++) {
+    $("#button"+i).click(function (e) {
+      //console.log(i);//TODO*** here you are
+
+      strategyObject.processResults($(this).data('button')) ? reward() : punish();
+      
+      saveMetrics(strategyObject.testedTitle(), 
+        strategyObject.testedLine(), 
+        strategyObject.scoreModifier() 
+        );
+      testPicker();
+
+    }).data('button', i);
+    
+  };
+  function testPicker() {
+    strategyObject = oddManOut;
+    strategyObject.setup(current.title, current.text, current.nextItem());
+    $("#display").html(strategyObject.display.replace(/\n/g,"<br />"));
+    if(strategyObject.buttonsNotText()) {
+      $("#input").hide();
+      $("#submit").hide();
+      for (var i = 1; i <= 4; i++) {
+        $("#button"+i).show();
+        $("#button"+i).html(strategyObject.button(i));
+
+      };
+    } else {
+      $("#input").show().clear();
+      $("#submit").show();
+      for (var i = 1; i <= 4; i++) {
+        $("#button"+i).hide();
+      };
+    }
+  }
+  }//end of strategyObject scope
+
+
+  var testText;
+  var testTitle;
+  var memorizingMetrics;
+  var current;
+  function mainInit() {
+    testText = "a\nb\nc\nd\ne\nf".split("\n");
+    testTitle = "alphabet";
+    memorizationArray = getMems();
+    console.log(memorizationArray);
+    current = memorizationArray[JSON.parse(localStorage['current'])];
+    /*if(localStorage['memorizingMetrics'] == null) {
+      memorizingMetrics = {
+        data: "junk",
+        save: function(title, line, scoreModifier) {
+          alert("save the memorizingMetrics resuls!");
+        }
+      }
+    } else {
+      memorizingMetrics = JSON.parse(localStorage['memorizingMetrics']);
+    }*/
+    //workingState = JSON.parse(localStorage.getItem('newState'));
+  }
+  mainInit();
+  testPicker();
+
+
+});                                    
+ </script>                                                               
+ </head>                                                                
+ <body> 
+  <div id="reward" style="display: none;">Correct!</div>
+  <div id="punish" style="display: none;">WRONG</div>
+  <div id="display">test stuff</div>
+  <textarea id="input"></textarea>
+  <div id="buttons">
+   <button id="button1"><br />
+   <button id="button2"><br />
+   <button id="button3"><br />
+   <button id="button4"><br />
+  </div>
+  <button id="submit">Submit</button>
+
+ </body>
+</html>

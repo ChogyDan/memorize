@@ -1,0 +1,493 @@
+<html>                                                                  
+ <head> 
+ <meta http-equiv="content-type" content="text/html;charset=utf-8" />                                                                
+ <script type="text/javascript" src="jquery.js"></script>
+ <script type="text/javascript" src="underscore.js"></script>
+ <script type="text/javascript">
+  $(document).ready(function() {
+    //TODO have that meta tag inserted from here
+    //***** Global Variables
+  	var to_memorize ="nothing in here yet";
+    var primary_select = "none";
+    var secondary_select = "none";
+    var structure_select = "none";
+    var next_hint = "";
+    var queue=new Array;
+    var unqueued;
+    var guiModel = new Object();
+    //***** \Global Variables  //TODO check to see if these variables really need to be global
+    //var results; //store whether someone get's it right or not.
+    //var queue; //a queue of what the person is working on
+
+    //TODO: if I am inserting the starting GUI via javascript, rather than just having it be in the html, do it here
+
+    //***** Sample text logics
+    //these reset the selects after a saved text's settings are changed.  Not exactly what I want though... //TODO fix this when I save texts proper
+    $("#primary_select").change( function () {
+      reset_to_defaults_except("primary_select") 
+    });
+    $("#secondary_select").change( function () { 
+      reset_to_defaults_except("secondary_select");
+    });
+    $("#structure_select").change( function () { 
+      reset_to_defaults_except("structure_select");
+    });
+
+
+    var defaultIsSet = false;
+    function reset_to_defaults_except(selectThatWasChanged) {
+      if(defaultIsSet) {
+        selectValToSave = $("#"+selectThatWasChanged).val();
+        $("#primary_select").val("");
+        $("#secondary_select").val("");
+        $("#structure_select").val("");
+        $("#sample_select").val("");
+        //TODO: clear the actual text
+        $("#"+selectThatWasChanged).val(selectValToSave);
+        defaultIsSet = false;
+      }
+    }
+
+
+
+    
+    $('.sample_text').attr('hidden','hidden').each( function () {
+      var sample_title = $(this).attr('title');
+      //API TEST alert(sample_title);
+      $('#sample_select').append( $('<option></option>').attr("value",sample_title).text(sample_title) );         //TODO add .change listeners to this that setup the other selectors
+        //.change(function() { 
+        //set text to selected sample text
+        //same for primary and secondary structure attributes
+        //Maybe the same for a memorization strategy?
+      //});
+
+      //TEST JUNK $('body').append ("more crap" + sample_title);
+    });  // hides all the sample texts
+
+//***** <\sample text logics
+
+
+    $('#sample_select').change( function () {
+      defaultIsSet = true;
+      var sample_text_selector = 'div[title="'+$("#sample_select").val()+'"]';
+      $("#memorize_this").text($(sample_text_selector).text());
+      $("#primary_select").val($(sample_text_selector).attr('primary'));
+      $("#secondary_select").val($(sample_text_selector).attr('secondary'));
+      $("#structure_select").val($(sample_text_selector).attr('structure'));
+    });
+
+    $("#sample_select").val("");
+    $("#sample_select").change();
+
+
+    function compare_lines_and_set_hint(correctAnswer, userInput){
+      var pattern = /[\s,.:\-_]/g; //pattern of characters to ignore
+      //alert(userInput);
+      //alert($("#input").val());
+      _set_hint(userInput);
+      return ($("#input").val().replace(pattern,'') == userInput.replace(pattern,''));
+    }
+
+
+    //***** Strategy functions
+    var current_line_blob_strategy = function (text, line_number) {
+      set_GUI('<p>Try to memorize this line</p>' + to_memorize[line_number],
+                   '', "Done");
+
+      $('#button1').click( function(){
+        test_dispatcher();
+      });
+
+    }
+
+
+
+    function following_line_blob_strategy (text, line_number) {
+      if (line_number == 0) {
+        set_GUI('<p>What is the first line?</p>', '', 'Submit');
+      } else {
+        set_GUI('<p>What is the line after this line, "'+to_memorize[line_number-1]+'"?','','Submit');
+      }
+
+      $('#button1').click( function(){
+        if (compare_lines_and_set_hint(to_memorize[line_number])) {
+         // alert('following_line passed');
+          test_dispatcher();
+        } 
+      });
+      
+    }
+    function confirm_answer_handler(rightAnswer, userInputLocation) {
+      var scoreMod=0;
+      return (function() {
+        if (compare_lines_and_set_hint(rightAnswer)) {
+         // alert('following_line passed');
+         scoreMod+=1;
+         _set_hint("The answer [" + correctAnswer + "] is correct!");
+          test_dispatcher(scoreMod, line_number);
+        } else {
+          scoreMod-=1;
+        }
+      });
+    }
+
+
+    function other_half_pairs_strategy (text, line_number) {
+      //alert ( secondary_select);
+      var scoreMod=0;
+      var partA = text[line_number].split(secondary_select)[0];
+      var partB = text[line_number].split(secondary_select)[1];
+      //alert(partA + "***" + partB);
+
+      if (Math.floor(Math.random()+0.5) == 0){
+        correctAnswer = partB;
+        prompt = partA+secondary_select+"_______";
+      } else {
+        correctAnswer = partA;
+        prompt = "_______"+secondary_select+partB;
+      }
+      set_GUI('<p>Fill in the blank:</p> ' + prompt,'',"Check");
+      $('#button1').click( function(){
+        if (compare_lines_and_set_hint(correctAnswer) ) {
+         // alert('following_line passed');
+         scoreMod+=1;
+         _set_hint("The answer [" + correctAnswer + "] is correct!");
+          test_dispatcher(scoreMod, line_number);
+        } else {
+          scoreMod-=1;
+        }
+      });
+    }
+
+    function multiple_choice_blob_strategy(text, lineNumber) {
+      guiModel.contextArray = new Array();
+      var contextI = lineNumber-_.random(1,2);//contextI is going to be the index of where the context array will start
+      
+      if (contextI>(text.length-4)){//makes sure that the size of context is at least 4
+        contextI = text.length-4;
+      }
+      if (contextI<0) { //if the text is small, contextI could end up negative, which needs to be corrected
+        contextI=0; 
+      } //contextI is setup at this point, and is used in the following for loop...
+      for (var count = 0, contextI; count < 4 && contextI < text.length; count++,contextI++) {
+        guiModel.contextArray.push(text[contextI]);
+        if(contextI == lineNumber) {
+          guiModel.indexOfAnswer=count;
+        } 
+      };//guiModel.contextArray is completely setup at this point
+      //alert("guiModel.contextArray: " + guiModel.contextArray);
+
+      var possibleAnswers = new Array();
+      possibleAnswers.push(lineNumber);
+      var nextCandidate;
+      while (possibleAnswers.length < 4 && possibleAnswers.length <= text.length) {/*first conditional sets the length, and the second conditional handles cases where the text is shorter than 4*/
+        nextCandidate = _.random(text.length-1);
+        if(_.indexOf(possibleAnswers, nextCandidate) == -1) {
+          possibleAnswers.push(nextCandidate);
+        }
+      }
+      guiModel.choicesArray = new Array();
+      for (var j = 0; j < 4; j++) {
+        guiModel.choicesArray.push(text[possibleAnswers[j]]);
+      };
+      set_gui_multiplechoice();
+    }
+
+
+    /*
+    guiModel.
+      choicesArray = an array of possible answers that includes the right answer
+      contextArray = array of the right answer plus the context
+      indexOfAnswer = the index of the contextArray of the correct answer.
+    */
+    function set_gui_multiplechoice () {/*optionList, rightAnswerIndex*/
+      var shuffledOptionList = _.shuffle(guiModel.choicesArray);
+      var nextDisplay = "";
+      var correctAnswer = guiModel.contextArray[guiModel.indexOfAnswer];
+      //TODO unbind any previous handlers
+      $("button").unbind();
+      //TODO set the display asking the question
+      //replace the correct answer with a blank answer composed of '_' of length equal to the average length of the incorrect answers.
+      var averageLengthOfIncorrect;
+      var tempA = 0;
+      for (var i = guiModel.contextArray.length - 1; i >= 0; i--) {
+        if(i != guiModel.indexOfAnswer) {
+          tempA += guiModel.contextArray[i].length;
+        }
+      };
+      averageLengthOfIncorrect = tempA / (guiModel.contextArray.length-1);
+      guiModel.contextArray[guiModel.indexOfAnswer] = Array(Math.floor(averageLengthOfIncorrect)+1).join("_");
+
+      //setup nextDisplay
+      for (var i =  0; i < guiModel.contextArray.length; i++) {
+        nextDisplay += guiModel.contextArray[i] + "<br />";
+      };
+
+      $("button").each( function (i){
+        $(this).click({value: i, text: shuffledOptionList[i]}, general_answer_handler(correctAnswer, "#button"+(i+1) ) ); 
+      });
+
+      set_GUI(nextDisplay,"",shuffledOptionList[0],shuffledOptionList[1],shuffledOptionList[2],shuffledOptionList[3]);
+    }
+
+
+
+    function general_answer_handler(rightAnswer, userInputLocation) {
+      var pattern = /[\s,.:\-_]/g; //pattern of characters to ignore
+      var scoreMod=1;
+      return (function(event) {
+        var userInput;
+        if (userInput = $(userInputLocation).val() == "") {
+          userInput = $(userInputLocation).html();
+        }
+
+        //alert(event.data.value+ " and " + userInput);
+        if (rightAnswer.replace(pattern,'') == userInput.replace(pattern,'') ) {
+          _set_hint("The answer [" + rightAnswer + "] is correct!");
+          test_dispatcher(scoreMod);
+        } else {
+          _set_hint(rightAnswer);
+          scoreMod-=1;
+        }
+      });
+    }
+
+    var currentLineNumber = undefined;
+    var currentText = undefined;
+    var currentQueueNumber = undefined;
+    function test_dispatcher(scoreMod) {
+      if(scoreMod != undefined && currentLineNumber != undefined && currentText != undefined) {
+        //TODO IMPROVE this section implements a preliminary scoring system
+        //don't allow negative scoreMods, and if the score gets above 2, consider the line memorized.
+        if (scoreMod < 0) scoreMod = 0;
+        /*for (var i = 0; i < queue.length; i++) {
+          if(queue[i].lineNumber == currentLineNumber) {//this for+if finds the correct queue item.  Maybe it could be tracked with a static variable?
+            queue[i].score += scoreMod;
+            if (queue[i].score > 2) {
+              queue.splice(i,1);
+            }
+            break;
+          }
+        }*/
+        queue[currentQueueNumber].score += scoreMod;
+        if(queue[currentQueueNumber].score > 2) queue.splice(currentQueueNumber,1);
+      }
+
+      currentLineNumber = _.random(to_memorize.length);//TODO DELETE
+
+      $('#button1').unbind();
+      clear_input_area();
+      if (queue.length < 3) {
+        var newChunkToMemorize = new Object();
+        newChunkToMemorize.lineReference = unqueued.pop();
+        alert(newChunkToMemorize.lineReference);
+        newChunkToMemorize.score = 1;
+        queue.push(newChunkToMemorize);
+      }
+      currentQueueNumber = _.random(queue.length-1);
+      alert("currentQueueNumber: " + currentQueueNumber + " / queue.length: " + queue.length);
+      currentText = to_memorize[queue[currentQueueNumber].lineReference[0]];
+      currentLineNumber = queue[currentQueueNumber].lineReference[1];
+      //current_line(to_memorize,currentLineNumber);
+      //following_line(to_memorize, currentLineNumber);
+      
+      //other_half_pairs_strategy(to_memorize, queue[random_number(queue.length)].lineNumber);
+      //TODO NEXT STEP: fix this to use the queue
+      multiple_choice_blob_strategy(currentText, currentLineNumber);
+      //final behavior
+      //based on text structure, and other meta data, pick select a strategy function for the next round of memorizing
+      //have a queue of lines that is being worked on
+      //have a score variable to track user progress
+      //if structure is blob
+        //maybe pick current line or following line or (previous line)
+      //if structure is pairs
+        //pick one the the _pairs_strategy functions
+      //if structure is ordered_blobs
+        //pick one of the _ordered_blobs functions
+
+
+    }
+
+
+    function _set_GUI_button(button, value) {
+      if (value != undefined) {
+        //alert('_set_GUI_button displaying:'+value)
+        button.html(value)
+        button.removeAttr('hidden');
+      } else {
+        //alert('_set_GUI_button hiding')
+        button.attr('hidden', 'hidden');
+      }
+    }
+
+    function clear_input_area() {
+      $("#input").val('');
+    }
+
+    function _set_hint(hint){
+      $("#hint").html(hint);
+    }
+
+    function set_GUI (display, hint, button1, button2, button3, button4) {
+        $("#display").html(display);
+        //_set_hint(hint);
+        _set_GUI_button($("#button1"),button1);
+        _set_GUI_button($("#button2"),button2);
+        _set_GUI_button($("#button3"),button3);
+        _set_GUI_button($("#button4"),button4);
+        return;
+    }
+
+
+
+
+    $("#memorize_this_button").click( function() {
+      //get text to memorize
+      primary_select = $("#primary_select").val().replace("double_newline", "\n\n").replace("newline","\n");
+      secondary_select = $("#secondary_select").val().replace("newline","\n");
+      structure_select = $("#structure_select").val();
+      //alert(generate_random_list(5));
+      //alert("<primary>"+primary_select + "<hmm>");
+      //alert("\\n<hmmmm>");
+      //TODO: do a check against default data, make sure it has changed
+      to_memorize = new Array;
+      unqueued = new Array;
+      to_memorize.push($("#memorize_this").text().split(primary_select));
+      //TODO support the secondary select.  The following couple lines just wipe out the secondary select for now.
+      var wipe_out_secondary_select = new Array();
+      for (var i = 0; i < to_memorize[0].length; i++) {
+        wipe_out_secondary_select =  wipe_out_secondary_select.concat(to_memorize[0][i].split(secondary_select));
+      };
+      to_memorize[0] = wipe_out_secondary_select;
+      secondary_select = "none";
+      //TODO end of secondary select wipeout
+      for (var i = 0; i < to_memorize[0].length; i++) {
+        unqueued.push([0,i]);
+      };
+      if (secondary_select != "none") {
+        for (var i = 0; i < to_memorize[0].length; i++) {
+          to_memorize[i+1] = to_memorize[0][i].split(secondary_select);
+          for (var j = 0; j < to_memorize[i+1].length; j++) {
+            unqueued.push([i+1,j]);
+          };
+          //unqueued.push(_.shuffle(_.range(to_memorize[0][i].length)));
+        };
+      }
+      unqueued = _.shuffle(unqueued);
+      //alert($("#memorize_this").text().split(primary_select));
+      //$("#memorize_this").remove();
+      //$("#memorize_this_button").remove();
+      $("#opening_ui").remove();
+
+    //setup memorizing UI
+      //add a <div> to view<textarea> for entry<button> for submitting?
+      $('body').append('<div id="display">test display data</div><br />')
+               .append('<div id="hint" style="color:red"></div><br />')
+               .append('<textarea id="input" rows="4" cols="50"></textarea><br />')
+               .append('<button id="button1">Submit</button><button id="button2" hidden>no button</button><button id="button3" hidden>no button</button><button id="button4" hidden>no button</button>');
+      //to start, set display to the text entered, and set the button to "begin"
+
+      $('#display').html('<p>' + to_memorize[0].join("<br />") + '</p>');
+      $("#button1").html('<p>no hint yet</p>');
+      $("#button1").html("Begin");
+
+      //add a click handler to the submit button that random shows a line, and asks users to enter the following line.
+      $("#button1").click(test_dispatcher);
+      $("#input").keyup(function (event) {
+        if(event.which == 13){
+          $("#button1").click();
+        }
+      });
+    });
+   //setup text area submitt button click function to grab textarea text, and store it in a variable, then remove textarea and associated button
+ });                                    
+ </script>                                                               
+ </head>                                                                
+   <body>  
+   <div id="opening_ui">                                                                
+     <textarea id="memorize_this" rows="10" cols="60">I have no parents
+      The heaven and earth are my parents.</textarea>
+     <br />Select a primary divider <select id="primary_select">
+     <option value="double_newline">Double Newline</option>
+     <option value="newline">Single Newline</option>
+     </select>
+Select a secondary divider <select id="secondary_select">
+  <option value="none">none</option>
+  <option value="newline">Newline</option>
+  <option value=";">;</option>
+</select>
+
+<br />Select a text structure <select id="structure_select">
+  <option value="blob">a big blob of text</option>
+  <option value="pairs">an unordered dictionary or a series of pairs</option>
+  <option value="ordered_blobs">an ordered series of blobs</option>
+</select>
+
+
+<br />(Optionally) Choose a built in text <select id="sample_select">
+  <option value="">none</option>
+  <option value="crap">crap</option>
+  <option value="crap2">crap2</option>
+</select>
+
+   <br />
+
+   <button id="memorize_this_button">Click here to begin memorizing.</button>
+</div>
+   <div title="5 A's of relationships" class="sample_text"  primary="newline" structure="blob">Attention
+Acceptence
+Appreciation
+Affection
+Allowance</div>
+   <div title="Equality and Seen Things to Forget" class="sample_text" primary="double newline" secondary="newline" structure="ordered_blobs">When I realize everything’s equality
+I forget all about my close friends and my relatives
+It’s OK to forget the objects of your attachment
+
+When I realize wisdom beyond thought
+I forget everything included in perceiver and perceived
+It’s OK to forget these causes of happiness and pain
+
+Beyond memory, beyond feelings
+I forget all about experiences, the good ones and the bad
+It’s OK to forget them, they just go up and down
+
+When I know the three kayas are present naturally
+I forget all about the deity’s generation stage practice
+It’s OK to forget the Dharma made of concepts
+
+When I realize the result’s inside of me
+I forget all about the results you have to strive and strain to get
+It’s OK to forget the Dharma of the relative truth
+
+Meditating on the key instructions
+I forget all other explanations and their conventional terms
+It’s OK to forget the Dharma that makes you arrogant
+
+When I realize appearances are my texts
+I forget all about those big books with their letters in black
+It’s OK to forget the Dharma that’s just a heavy load</div>
+
+<div title="Code of Anonymous Samurai" class="sample_text" primary="newline" secondary=";" structure="pairs">I have no parents; I make the heavens and earth my parents.
+I have no home; I make awareness my home.
+I have no life or death; I make the tides of breathing my life and death.
+I have no divine power; I make honesty my divine power.
+I have no means; I make understanding my means.
+I have no magic secrets; I make character my magic secret.
+I have no body; I make endurance my body.
+I have no eyes; I make the flash of lightening my eyes.
+I have no ears; I make sensibility my ears.
+I have no limbs; I make promptness my limbs.
+I have no strategy; I make "unshadowed by thought" my strategy.
+I have no designs; I make "seizing opportunity by the forelock" my design.
+I have no miracles; I make right-action my miracles.
+I have no principles; I make adaptability to all circumstances my principles.
+I have no tactics; I make emptiness and fullness my tactics.
+I have no talents; I make ready wit my talent.
+I have no friends; I make my mind my friend.
+I have no enemy; I make carelessness my enemy.
+I have no armor; I make benevolence and righteousness my armor.
+I have no castle; I make immovable-mind my castle.
+I have no sword; I make absence of self my sword. </div>
+
+ </body>                                                                 
+ </html>

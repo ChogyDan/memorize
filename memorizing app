@@ -1,0 +1,22 @@
+startup:
+command line - list of files with texts to memorize
+
+Goals:
+gradually increase difficulty
+report progress
+
+
+
+brainstorm:
+Make requests of users to perform memorizing strategies
+ - say stuff out loud
+ - forced breaks (pomodoro technique)
+ - Just ask if a line is familiar to a person
+ - ask for the person to analyze a text, and then use that result to help memorize
+ - request stretching and movement breaks
+
+Types of questions:
+ - ask if a line is familiar, if yes, next question, if no, show the line with context
+ - ask for the line before a given line
+ - same, after a given line
+ - same, between two lines

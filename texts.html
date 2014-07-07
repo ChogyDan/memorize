@@ -1,0 +1,110 @@
+<!--#Area to enter the text
+. the area should have divisors that break up the text
+. 2 kinds of divisers
+.. one which connects sections to each other in an ordered way
+.. another which disconnects sections, in other words, indicates a section is unordered
+
+#operators for fast dividing the text
+. ie, convert all newlines / double newlines / commas / whatever into divisers for the text
+
+
+# an area to the side for an outline of a text
+. drag and drop between the two texts to connect them
+-->
+<!--Intermediate goals, input a basic text
+-text box for viewing the text
+-selector for selecting currently saved texts
+-some buttons for saving or deleting
+-->
+<html>                                                                  
+ <head> 
+ <meta http-equiv="content-type" content="text/html;charset=utf-8" />                                                                
+ <script type="text/javascript" src="jquery.js"></script>
+ <script type="text/javascript" src="underscore.js"></script>
+  <script type="text/javascript" src="helpercode.js"></script>
+ <script type="text/javascript">
+  $(document).ready(function() {
+  	//setup
+	var textNames = pullArrayFromLS('textNames'); 
+  	var textFolderTexts = pullArrayFromLS('textFolderTexts'); 
+  	var flagNewTextCurrentlyBeingEdited = true;
+  	var newTextSave = "";
+    
+    function addTextToPage(usTextName) {
+    	$("select").append("<option>"+usTextName+"</option>");
+    }
+    function resetToNewText () {
+    	$("#input").val(newTextSave);
+  		flagNewTextCurrentlyBeingEdited = true;
+  		$("select").val("(new text)");
+    }
+    function save () {
+		pushArrayToLS(textNames, 'textNames');
+		pushArrayToLS(textFolderTexts, 'textFolderTexts');
+    }
+
+    function getSelectedTitle() {
+    	return $("select").val();
+    }
+
+    function getSelectedText() {
+    	return textFolderTexts[_.indexOf(textNames, getSelectedTitle())];
+    }
+
+  	$("#save").click(function () {
+  		while(true){//todo: This while loop gets a name.  Change this to something cool.
+	  		var newTextName=prompt("Please enter a name for this text.");
+	  		if(newTextName!=null && newTextName!='' && _.indexOf(textNames, newTextName)==-1) {
+	  			textFolderTexts.push($("#input").val());
+	  			textNames.push(newTextName);
+	  			save();
+	  			addTextToPage(newTextName);
+	  			$("select").val(newTextName);
+	  			flagNewTextCurrentlyBeingEdited = false;
+	  			newTextSave = "";
+	  			break;
+	  		}
+	  	}
+
+  	})
+
+  	//setup the <select> with the currently saved texts
+  	_.each(textNames, function(name, index, textFolder) {
+  		addTextToPage(name);
+  	});
+
+  	$("select").change(function() {
+  		titleOfTextToSwitchTo = $(this).val();
+  		if(flagNewTextCurrentlyBeingEdited == true) newTextSave = $("#input").val();
+  		if(titleOfTextToSwitchTo != "(new text)") {
+  			$("#input").val(textFolderTexts[_.indexOf(textNames, titleOfTextToSwitchTo)]);
+  			flagNewTextCurrentlyBeingEdited = false;
+  		} else resetToNewText();
+  	});
+  
+  	$("#delete").click(function () {
+  		titleToDelete = getSelectedTitle();
+  		indexToDelete = _.indexOf(textNames, titleToDelete);
+  		textFolderTexts.splice(indexToDelete, 1);
+  		textNames.splice(indexToDelete, 1);
+  		$("option:selected").remove();
+  		save();
+  		resetToNewText();
+  	});
+  	$("#memorize").click(function () {
+  		var newMemorization = new InstanceOfMemorization(getSelectedTitle(), getSelectedText().split('\n'));
+  		localStorage.setItem('current', newMemorization.index);
+  		window.location.href = 'memorize.html';
+  	});
+ });                                    
+ </script>                                                               
+ </head>                                                                
+  <body> 
+  	<textarea id="input"></textarea> <br />
+  	<select>
+  		<option>(new text)</option>
+  	</select><form><input type="radio" name="structure" value="dictionary" />Dictionary<input type="radio" name="structure" value="block" />Block</form>
+  	<button id="save">Save</button><button id="delete">Delete</button> <br />
+  	<button id="memorize">Begin memorizing!</button>
+  </body>
+</html>

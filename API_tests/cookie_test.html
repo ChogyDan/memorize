@@ -1,0 +1,28 @@
+<html>
+<head>
+<script type="text/javascript" src="jquery.js"></script> 
+<script type="text/javascript" src="jquery.cookie.js"></script>          
+<script type="text/javascript">                        
+$(document).ready(function() {
+  if($.cookie("view_count_test") == null) {
+    alert("view count was found to be null; attempting a set/get test of $.cookie()");
+    $.cookie("view_count_test", "foo"); //set
+    alert("view count cookie set to set/get test: "+$.cookie("view_count_test")); //get
+    alert($.cookie("view_count_test"));
+  } else {
+    $.cookie("view_count_test", $.cookie("view_count_test") +1 );
+  }
+   //access the cookie.  increment it, 
+//display its value to the page, save cookie
+  //alert("=="+$.cookie("view_count_test")+"==");
+  $("#display").html($.cookie("view_count_test"));
+  //TODO Have it count clicks by saving and retrieving data from a cookie.  Or maybe no button, just a number of times visited output
+ });                                    
+ </script>
+</head>
+<body>
+//TODO have a numeric output here, labeled as "number of times visited"
+<p id="display">initial content of display.  You should never see this message.</p>
+<button id="increment">increment</button><button id="reset">reset</button>
+</body>
+</html>
