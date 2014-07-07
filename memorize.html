@@ -10,11 +10,12 @@
 $(document).ready(function() {
  
   var oddManOut = {
-    structure: "block",
+    //TODO these variables are given dummy values for debugging purposes
+    structure: "un",
     text: "unsetup text",
     title: "unsetup title",
     line: 42,
-    buttonNames: ["name1", "name2", "nam3", "name4"],
+    buttonNames: ["name1", "name2", "nam3", "name4"], 
     setup: function(newTitle, newText, newLine) {
       this.title = newTitle;
       this.text = newText;
@@ -146,8 +147,9 @@ $(document).ready(function() {
     testText = "a\nb\nc\nd\ne\nf".split("\n");
     testTitle = "alphabet";
     memorizationArray = getMems();
-    console.log(memorizationArray);
+
     current = memorizationArray[JSON.parse(localStorage['current'])];
+    console.log(current);
     /*if(localStorage['memorizingMetrics'] == null) {
       memorizingMetrics = {
         data: "junk",
