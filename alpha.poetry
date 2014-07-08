@@ -2,6 +2,7 @@
 DONE! make scoring work, see memorize.html line 95...
 
 then make sure a basic flow of line testing is working.
+- _updateCorrectTime doesnt make sense, as lastCorrectTime doesnt take into account of incorrect answer times.  Should longest be calculated against the last correct time? or the last tested time?
 
 Do a round of testing against a poem.
 

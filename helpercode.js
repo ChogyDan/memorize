@@ -47,8 +47,10 @@ _nextItem = function() {
   time = Date.now();
   for (var i = this.workingSet.length - 1; i >= 0; i--) {
     workingItem = this.workingSet[i];
-    console.log(time-this.lastCorrectTime[workingItem] + " > " + this.longest[workingItem]);
-    if(time-this.lastCorrectTime[workingItem] > this.longest[workingItem]) return workingItem;
+    if(time-this.lastCorrectTime[workingItem] > this.longest[workingItem]){
+      console.log(time-this.lastCorrectTime[workingItem] + " > " + this.longest[workingItem]);
+      return workingItem;
+    }
   };
   newItem = this.unWorkingSet.pop();//TODO make this a bit random
   this.workingSet.push(newItem);
