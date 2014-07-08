@@ -81,9 +81,6 @@ $(document).ready(function() {
   };//oddManOut
 
 
-  function saveMetrics(title, lineNumber, scoreModifier) {
-
-  }
   function reward() {
     $("#reward").show().delay(1000).slideUp( 300 );
 
@@ -91,26 +88,30 @@ $(document).ready(function() {
   function punish() {
     $("#punish").show().delay(1000).slideUp( 300 );
   }
+
+  function handleResult(correctness, line) {
+    if (correctness) {
+      current.updateCorrectTime(line);
+      reward();
+    } else {
+      current.reduceTarget(line);
+      punish();
+    }
+    saveMem(current);
+  }
+
   {//strategyObject scope
   var strategyObject;
   $("#submit").click(function (e) {
-    strategyObject.processResults() ? reward() : punish();
-    saveMetrics(strategyObject.testedTitle(), 
-      strategyObject.testedLine(), 
-      strategyObject.scoreModifier() 
-      );
+    handleResult(strategyObject.processResults(), strategyObject.line);
     testPicker();
   });
   for (var i = 1; i <= 4; i++) {
     $("#button"+i).click(function (e) {
       //console.log(i);//TODO*** here you are
 
-      strategyObject.processResults($(this).data('button')) ? reward() : punish();
+      handleResult(strategyObject.processResults($(this).data('button')),  strategyObject.line);
       
-      saveMetrics(strategyObject.testedTitle(), 
-        strategyObject.testedLine(), 
-        strategyObject.scoreModifier() 
-        );
       testPicker();
 
     }).data('button', i);
@@ -147,9 +148,7 @@ $(document).ready(function() {
     testText = "a\nb\nc\nd\ne\nf".split("\n");
     testTitle = "alphabet";
     memorizationArray = getMems();
-
     current = memorizationArray[JSON.parse(localStorage['current'])];
-    console.log(current);
     /*if(localStorage['memorizingMetrics'] == null) {
       memorizingMetrics = {
         data: "junk",

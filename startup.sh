@@ -1,6 +1,6 @@
 #! /bin/dash
 
-kate alpha.poetry
-subl -n memorize.html start.html texts.html helpercode.js
-google-chrome --new-window start.html
-
+kate -n alpha.poetry & disown
+subl -n memorize.html start.html texts.html helpercode.js & disown
+google-chrome --new-window start.html & disown
+konsole & disown

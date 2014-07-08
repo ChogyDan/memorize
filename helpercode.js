@@ -31,13 +31,19 @@ function InstanceOfMemorization (title, text) {
   };
   this.lastCorrectTime = [];
   this.longest = [];
-  this.nextItem = _nextItem;
+  setupIOMFunctions(this);
 
   addNewMem(this);
 
 }
 
-_nextItem = function(mem) {
+function setupIOMFunctions (IOM) {
+  IOM.nextItem = _nextItem;
+  IOM.updateCorrectTime = _updateCorrectTime;
+  IOM.reduceTarget = _reduceTarget;
+}
+
+_nextItem = function() {
   time = Date.now();
   for (var i = this.workingSet.length - 1; i >= 0; i--) {
     workingItem = this.workingSet[i];
@@ -51,6 +57,18 @@ _nextItem = function(mem) {
   return newItem;
 }
 
+_updateCorrectTime = function(line) {
+  time = Date.now();
+  this.longest[line] = time - this.lastCorrectTime[line];
+  this.lastCorrectTime[line] = time;
+  this.lastWorked = time;
+
+}
+
+_reduceTarget = function(line) {
+  this.longest[line] = this.longest[line]*0.9;
+}
+
 function addNewMem(newMem) {
   newMem.index = memorizations.length;
   memorizations.push(newMem);
@@ -59,12 +77,18 @@ function addNewMem(newMem) {
 function getMems() {
   mems = pullArrayFromLS('memorizations');
   _.each(mems, function(mem, index, list) {
-    mem.nextItem = _nextItem;
+    setupIOMFunctions(mem);
   });
   return mems;
 }
 function saveMems(mems) {
   pushArrayToLS(mems, 'memorizations');
+}
+
+function saveMem(mem) {
+  mems = getMems();
+  mems[mem.index] = mem;
+  saveMems(mems);
 }
 
 function removeMem(index) {

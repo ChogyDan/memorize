@@ -1,6 +1,8 @@
  
-make scoring work, see memorize.html line 95...
+DONE! make scoring work, see memorize.html line 95...
 
 then make sure a basic flow of line testing is working.
 
 Do a round of testing against a poem.
+
+refactor this.longest in helpercode.js to be named this.target time interval or something, which is what it actually is
