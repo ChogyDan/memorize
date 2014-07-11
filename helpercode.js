@@ -55,13 +55,14 @@ _nextItem = function() {
   newItem = this.unWorkingSet.pop();//TODO make this a bit random
   this.workingSet.push(newItem);
   this.lastCorrectTime[newItem] = Date.now();
+  this.lastTestedTime[newItem] = Date.now();
   this.longest[newItem] = 0;
   return newItem;
 }
 
 _updateCorrectTime = function(line) {
   time = Date.now();
-  this.longest[line] = time - this.lastCorrectTime[line];
+  this.longest[line] = time - this.lastTestedTime[line];
   this.lastCorrectTime[line] = time;
   this.lastWorked = time;
 
@@ -69,6 +70,7 @@ _updateCorrectTime = function(line) {
 
 _reduceTarget = function(line) {
   this.longest[line] = this.longest[line]*0.9;
+  this.lastTestedTime[line] = Date.now();
 }
 
 function addNewMem(newMem) {
