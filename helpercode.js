@@ -26,7 +26,7 @@ function InstanceOfMemorization (title, text) {
   this.lastWorked = Date.now();
   this.workingSet = [];
   this.unWorkingSet = [];
-  for (var i = 0; i < text.length; i++) {
+  for (var i = text.length -1; i >= 0; i--) {
     this.unWorkingSet.push(i);
   };
   this.lastCorrectTime = [];

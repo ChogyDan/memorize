@@ -29,6 +29,7 @@
   	var textFolderTexts = pullArrayFromLS('textFolderTexts'); 
   	var flagNewTextCurrentlyBeingEdited = true;
   	var newTextSave = "";
+    resetToNewText();
     
     function addTextToPage(usTextName) {
     	$("select").append("<option>"+usTextName+"</option>");
