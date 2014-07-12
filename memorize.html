@@ -8,7 +8,6 @@
 
  <script type="text/javascript">
 $(document).ready(function() {
- 
   var oddManOut = {
     //TODO these variables are given dummy values for debugging purposes
     structure: "un",
@@ -45,8 +44,7 @@ $(document).ready(function() {
         } else {
           do { 
             randomLine = _.random(0,this.text.length-1); 
-          }
-          while(randomLine == this.line);
+          } while(randomLine == this.line); //ie, repeat the randomLine generation if it is equal to this.line, the correct line
           this.buttonNames[i] = this.text[randomLine];
         }
       };
@@ -74,6 +72,7 @@ $(document).ready(function() {
       if(buttonNumber != undefined) {
         return buttonNumber-1 == this.correctButton;
       }
+
 
     }
   };//oddManOut

@@ -18,7 +18,7 @@ function saveTexts(updatedTextsArray, updatedTitlesArray) {
   pushArrayToLS(updatedTitlesArray, 'textNames');
   pushArrayToLS(updatedTextsArray, 'textFolderTexts');
 }
-var memorizations = pullArrayFromLS('memorizations');
+
 function InstanceOfMemorization (title, text) {
 
   this.title = title;
@@ -30,6 +30,7 @@ function InstanceOfMemorization (title, text) {
     this.unWorkingSet.push(i);
   };
   this.lastCorrectTime = [];
+  this.lastTestedTime = [];
   this.longest = [];
   setupIOMFunctions(this);
 
@@ -74,9 +75,10 @@ _reduceTarget = function(line) {
 }
 
 function addNewMem(newMem) {
-  newMem.index = memorizations.length;
-  memorizations.push(newMem);
-  saveMems(memorizations);
+  mems = getMems();
+  newMem.index = mems.length;
+  mems.push(newMem);
+  saveMems(mems);
 }
 function getMems() {
   mems = pullArrayFromLS('memorizations');
