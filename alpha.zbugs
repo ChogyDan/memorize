@@ -1,0 +1,4 @@
+Bugs which have been noticed, and need fixing:
+
+texts.html seems to be populating the input area with stuff.  It should be blank.  I've noticed it when going back to the page.
+- needs investigating.

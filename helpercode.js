@@ -31,7 +31,7 @@ function InstanceOfMemorization (title, text) {
   };
   this.lastCorrectTime = [];
   this.lastTestedTime = [];
-  this.longest = [];
+  this.targetTime = [];
   setupIOMFunctions(this);
 
   addNewMem(this);
@@ -48,8 +48,8 @@ _nextItem = function() {
   time = Date.now();
   for (var i = this.workingSet.length - 1; i >= 0; i--) {
     workingItem = this.workingSet[i];
-    if(time-this.lastCorrectTime[workingItem] > this.longest[workingItem]){
-      console.log(time-this.lastCorrectTime[workingItem] + " > " + this.longest[workingItem]);
+    if(time-this.lastCorrectTime[workingItem] > this.targetTime[workingItem]){
+      console.log(time-this.lastCorrectTime[workingItem] + " > " + this.targetTime[workingItem]);
       return workingItem;
     }
   };
@@ -57,20 +57,20 @@ _nextItem = function() {
   this.workingSet.push(newItem);
   this.lastCorrectTime[newItem] = Date.now();
   this.lastTestedTime[newItem] = Date.now();
-  this.longest[newItem] = 0;
+  this.targetTime[newItem] = 0;
   return newItem;
 }
 
 _updateCorrectTime = function(line) {
   time = Date.now();
-  this.longest[line] = time - this.lastTestedTime[line];
+  this.targetTime[line] = time - this.lastTestedTime[line];
   this.lastCorrectTime[line] = time;
   this.lastWorked = time;
 
 }
 
 _reduceTarget = function(line) {
-  this.longest[line] = this.longest[line]*0.9;
+  this.targetTime[line] = this.targetTime[line]*0.9;
   this.lastTestedTime[line] = Date.now();
 }
 
