@@ -1,1 +1,3 @@
 Bugs which have been noticed, and need fixing:
+
+When someone memorizes the whole text, and there needs to be a delay, some message should be displayed, instead of possibly crashing.
