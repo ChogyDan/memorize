@@ -1,3 +1,18 @@
 Bugs which have been noticed, and need fixing:
 
 When someone memorizes the whole text, and there needs to be a delay, some message should be displayed, instead of possibly crashing.
+
+Maybe refactor   $("#input").keyup(); so that it is more centralized (in texts.html)
+
+Improve textarea resizing
+- redo using: http://www.impressivewebs.com/textarea-auto-resize/
+- maybe above can be extended to width: http://help.dottoro.com/ljalupdo.php
+
+NEW LINES
+need to be scrubbed out at some point from the text, so that they aren't include in the memorization.  Maybe in the strategy object, when the text is first input.
+OR, at least new lines need to be displayed correctly in the question area (ie, they need to be converted to <br>s), and also, there shouldn't be more than one newline in the correct answers area
+
+When an answer is correctly answered, maybe when wrong too, use the time of when the question is displayed, not when the question is completed.
+- ie. if you walk away from the computer, and then answer it correct, you shouldn't get a sudden jump in the targetTime.
+
+Maybe make sure that the targetTime is, on corrent answer, increased by a certain amount, instead of any old increase.
