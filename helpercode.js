@@ -19,10 +19,11 @@ function saveTexts(updatedTextsArray, updatedTitlesArray) {
   pushArrayToLS(updatedTextsArray, 'textFolderTexts');
 }
 
-function InstanceOfMemorization (title, text) {
+function InstanceOfMemorization (title, text, structure) {
 
   this.title = title;
   this.text = text;
+  this.testType = structure;
   this.lastWorked = Date.now();
   this.workingSet = [];
   this.unWorkingSet = [];

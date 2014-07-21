@@ -103,7 +103,18 @@
       resetToNewText();
     });
     $("#memorize").click(function () {
-      var newMemorization = new InstanceOfMemorization(getSelectedTitle(), getSelectedText().split('\n'));
+      if(getSelectedTitle() == "(new text)") {
+        alert("Please select a text");
+        return;
+      }
+      if ($("#test_selector input:checked").val() == undefined) {
+        alert("Please select a type for the text");
+        return;
+      }
+
+      var newMemorization = new InstanceOfMemorization( getSelectedTitle(), 
+                                                        getSelectedText().split('\n'),
+                                                        $("#test_selector input:checked").val() );
       localStorage.setItem('current', newMemorization.index);
       window.location.href = 'memorize.html';
     });
@@ -111,11 +122,14 @@
  </script>                                                               
  </head>                                                                
   <body> 
-    <textarea id="input"></textarea> <br />
+    <textarea id="input"></textarea> <div id="test_selector">
+      <input type="radio" name="structure" value="poem" />Poem
+      <input type="radio" name="structure" value="vocab" />Vocab List
+    </div>
     <select>
       <option>(new text)</option>
-    </select><form><input type="radio" name="structure" value="dictionary" />Dictionary<input type="radio" name="structure" value="block" />Block</form>
-    <button id="save">Save</button><button id="delete" class="delete_button">Delete</button> <br />
-    <button id="memorize">Begin memorizing!</button>
+    </select> <br />
+    <button id="save" class="basics">Save</button><button id="delete" class="delete_button basics">Delete</button> <br />
+    <button id="memorize" class="basics">Begin memorizing!</button>
   </body>
 </html>

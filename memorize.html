@@ -1,15 +1,15 @@
 
 <html>                                                                  
- <head> 
- <meta http-equiv="content-type" content="text/html;charset=utf-8" />
- <link rel="stylesheet" type="text/css" href="memorize.css" />
- <script type="text/javascript" src="jquery.js"></script>
- <script type="text/javascript" src="underscore.js"></script>
- <script type="text/javascript" src="helpercode.js"></script>
+<head> 
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+  <link rel="stylesheet" type="text/css" href="memorize.css" />
+  <script type="text/javascript" src="jquery.js"></script>
+  <script type="text/javascript" src="underscore.js"></script>
+  <script type="text/javascript" src="helpercode.js"></script>
 
- <script type="text/javascript">
-$(document).ready(function() {
-  var oddManOut = {
+  <script type="text/javascript">
+    $(document).ready(function() {
+      var oddManOut = {
     //TODO these variables are given dummy values for debugging purposes
     structure: "un",
     text: "unsetup text",
@@ -78,6 +78,93 @@ $(document).ready(function() {
     }
   };//oddManOut
 
+  var pairOneBlank = {
+    //TODO these variables are given dummy values for debugging purposes
+    structure: "un",
+    text: "unsetup text",
+    title: "unsetup title",
+    line: 42,
+    buttonNames: ["name1", "name2", "nam3", "name4"], 
+    setup: function(newTitle, newText, newLine, leftRightRandom) {
+      this.title = newTitle;
+      this.text = newText;
+      this.line = newLine;
+      this.separator = ';';
+      if(leftRightRandom == 2) {
+        this.leftRight = _.random(1);
+        console.log(this.leftRight + "this.leftRight");
+      } else if  (leftRightRandom == 1 || leftRightRandom == 0) {
+        this.leftRight = leftRightRandom;
+      } else {
+        console.log("ERROR: invalid leftRightRandom value");
+      }
+      this.left = "";
+      this.right = "";
+      /*function getOther(theLine, separator){
+        return theLine.split(separator, 2)[this.leftRight];
+      }*/
+      var context = this.line-_.random(1,2);//for now, context will be of size 4, starting 1 to 2 before the line, except under certain cirumstances which follow
+      if (context>(this.text.length-4)){//if context ends up starting near the end of the text, adjust that
+        context = this.text.length-4;
+      }
+      if (context<0) { //if the text is too small, context will end up negative at this point, and should just point to the beggining.
+        context=0; 
+      }
+      var correctAnswer = "CORRECT ANSWER HERE";
+      if(this.leftRight == 0) {
+        this.display = "?????;" + this.text[this.line].split(this.separator,2)[1];
+      } else {
+        this.display = this.text[this.line].split(this.separator,2)[0] + ";?????";
+      }
+
+      this.display=[];
+      this.display[(this.leftRight+1)%2] = this.text[this.line].split(this.separator,2)[(this.leftRight+1)%2];
+      console.log("this.display[this.leftRight] " + this.display[this.leftRight]);
+      this.display[this.leftRight] = "?????";
+    
+      this.display = this.display.join(this.separator);
+      console.log("this.display " + this.display);
+
+      this.correctButton = _.random(0,3);
+      for (var i = 0, randomLine; i < 4; i++) {
+        if (i == this.correctButton) {
+          this.buttonNames[i] = this.text[this.line].split(this.separator,2)[this.leftRight];
+        } else {
+          do { 
+            randomLine = _.random(0,this.text.length-1); 
+          } while(randomLine == this.line); //ie, repeat the randomLine generation if it is equal to this.line, the correct line
+          this.buttonNames[i] = this.text[randomLine].split(this.separator,2)[this.leftRight];
+        }
+      };
+    },
+    testedTitle: function() {
+      return this.title;
+    },
+    testedLine: function() {
+      return this.line;
+    },
+    testedTitle: function() {
+      return this.title;
+    },
+
+    buttonsNotText: function() {
+      return true;
+    },
+    button: function(number) {
+      return this.buttonNames[number-1];
+    },
+    setGuiWith: function(text, type) {
+
+    },
+    processResults: function(buttonNumber) {
+      if(buttonNumber != undefined) {
+        return buttonNumber-1 == this.correctButton;
+      }
+
+
+    }
+  };//pairOneBlank
+
 
   function reward() {
     $("#reward").show().delay(1000).slideUp( 300 );
@@ -99,13 +186,13 @@ $(document).ready(function() {
   }
 
   {//strategyObject scope
-  var strategyObject;
-  $("#submit").click(function (e) {
-    handleResult(strategyObject.processResults(), strategyObject.line);
-    testPicker();
-  });
-  for (var i = 1; i <= 4; i++) {
-    $("#button"+i).click(function (e) {
+    var strategyObject;
+    /*$("#submit").click(function (e) {
+      handleResult(strategyObject.processResults(), strategyObject.line);
+      testPicker();
+    });*///TODO this is code for typed responses rather than multiple choice
+    for (var i = 1; i <= 4; i++) {
+      $("#button"+i).click(function (e) {
       //console.log(i);//TODO*** here you are
 
       handleResult(strategyObject.processResults($(this).data('button')),  strategyObject.line);
@@ -113,28 +200,34 @@ $(document).ready(function() {
       testPicker();
 
     }).data('button', i);
-    
-  };
-  function testPicker() {
-    strategyObject = oddManOut;
-    strategyObject.setup(current.title, current.text, current.nextItem());
-    $("#display").html(strategyObject.display.replace(/\n/g,"<br />"));
-    if(strategyObject.buttonsNotText()) {
-      $("#input").hide();
-      $("#submit").hide();
-      for (var i = 1; i <= 4; i++) {
-        $("#button"+i).show();
-        $("#button"+i).html(strategyObject.button(i));
 
+    };
+    function testPicker() {
+      if(current.testType == "poem") {
+        strategyObject = oddManOut;
+      } else if (current.testType == "vocab") {
+        strategyObject = pairOneBlank;
+      } else{
+        console.log("ERROR: unhandled test type");
       };
-    } else {
-      $("#input").show().clear();
-      $("#submit").show();
-      for (var i = 1; i <= 4; i++) {
-        $("#button"+i).hide();
-      };
+      strategyObject.setup(current.title, current.text, current.nextItem(), 0);
+      $("#display").html(strategyObject.display.replace(/\n/g,"<br />"));
+      if(strategyObject.buttonsNotText()) {
+        $("#input").hide();
+        $("#submit").hide();
+        for (var i = 1; i <= 4; i++) {
+          $("#button"+i).show();
+          $("#button"+i).html(strategyObject.button(i));
+
+        };
+      } else {
+        $("#input").show().clear();
+        $("#submit").show();
+        for (var i = 1; i <= 4; i++) {
+          $("#button"+i).hide();
+        };
+      }
     }
-  }
   }//end of strategyObject scope
 
 
@@ -164,9 +257,9 @@ $(document).ready(function() {
 
 
 });                                    
- </script>                                                               
- </head>                                                                
- <body> 
+</script>                                                               
+</head>                                                                
+<body> 
   <div id="reward" style="display: none;">Correct!</div>
   <div id="punish" style="display: none;">WRONG</div>
   <div id="display">test stuff</div>
@@ -176,8 +269,8 @@ $(document).ready(function() {
    <button id="button2" /></button><br />
    <button id="button3" /></button><br />
    <button id="button4" /></button><br />
-  </div>
-  <button id="submit">Submit</button>
+ </div>
+ <button id="submit">Submit</button>
 
- </body>
+</body>
 </html>
