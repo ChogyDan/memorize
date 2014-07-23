@@ -20,6 +20,7 @@
  <head> 
  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
  <link rel="stylesheet" type="text/css" href="memorize.css" />
+  <link rel="stylesheet" type="text/css" href="texts.css" />
  <script type="text/javascript" src="jquery.js"></script>
  <script type="text/javascript" src="underscore.js"></script>
   <script type="text/javascript" src="helpercode.js"></script>
@@ -102,6 +103,7 @@
       save();
       resetToNewText();
     });
+
     $("#memorize").click(function () {
       if(getSelectedTitle() == "(new text)") {
         alert("Please select a text");
@@ -114,7 +116,8 @@
 
       var newMemorization = new InstanceOfMemorization( getSelectedTitle(), 
                                                         getSelectedText().split('\n'),
-                                                        $("#test_selector input:checked").val() );
+                                                        $("#test_selector input:checked").val(),
+                                                        true );
       localStorage.setItem('current', newMemorization.index);
       window.location.href = 'memorize.html';
     });
@@ -122,14 +125,21 @@
  </script>                                                               
  </head>                                                                
   <body> 
-    <textarea id="input"></textarea> <div id="test_selector">
-      <input type="radio" name="structure" value="poem" />Poem
-      <input type="radio" name="structure" value="vocab" />Vocab List
+
+
+   
+    <div id="controls" class="right">
+      <div id="test_selector">
+        <input type="radio" name="structure" value="poem" />Poem
+        <input type="radio" name="structure" value="vocab" />Vocab List
+      </div>
+      <select>
+        <option>(new text)</option>
+      </select> <br />
+      <a id="save" class="basics">Save</a><a id="delete" class="delete_button basics">Delete</a> <br />
+      <a id="memorize" class="basics right_arrow">Begin memorizing!</a>
     </div>
-    <select>
-      <option>(new text)</option>
-    </select> <br />
-    <button id="save" class="basics">Save</button><button id="delete" class="delete_button basics">Delete</button> <br />
-    <button id="memorize" class="basics">Begin memorizing!</button>
+     <div class="left"><textarea id="input"></textarea></div>
+    
   </body>
 </html>

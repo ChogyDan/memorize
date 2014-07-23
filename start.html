@@ -1,8 +1,3 @@
-#button to restart where you left off (it will use which ever save spot is selected in the select)
-#select with different saved spots, where it defaults to the last one
-
-#button to procede to text.html where you can enter new texts, or start work on another text
-
 <html>                                                                  
   <head> 
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
@@ -45,16 +40,17 @@
  </script>                                                               
  </head>                                                                
   <body> 
+  <div>This page is where you can pick up where you left off.  If this is your first time, or you want to start a new text, head to the <a href="#" id="texts_link">Text Manager</a>.</div>
     <br />
 
     <select id="save_selector">
 
     </select>
-        <button id="continue">continue</button> <br />
-    <button href="#" id="delete" class="delete_button basics">DELETE</button>
+        <a id="continue">continue</a> <br />
+    <a href="#" id="delete" class="delete_button basics">DELETE</a>
 
-    <br />
+    <br />    <br />
 
-    <button id="texts_link">Text Manager</button>
+    
   </body>
 </html>

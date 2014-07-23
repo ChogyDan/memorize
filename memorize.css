@@ -1,4 +1,4 @@
-.basics {
+.basics, a {
 	-moz-box-shadow:inset 0px 1px 0px 0px #cae3fc;
 	-webkit-box-shadow:inset 0px 1px 0px 0px #cae3fc;
 	box-shadow:inset 0px 1px 0px 0px #cae3fc;
@@ -19,14 +19,15 @@
 	text-decoration:none;
 	text-align:center;
 	text-shadow:1px 1px 0px #287ace;
+	padding: 1px 10px;
 }
-.basics:hover {
+.basics:hover, a:hover {
 	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #4197ee), color-stop(1, #79bbff) );
 	background:-moz-linear-gradient( center top, #4197ee 5%, #79bbff 100% );
 	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#4197ee', endColorstr='#79bbff');
 	background-color:#4197ee;
 }
-.basics:active {
+.basics:active, a:active {
 	position:relative;
 	top:1px;
 }
@@ -64,7 +65,7 @@
 	-webkit-border-bottom-right-radius:12px;
 	-moz-border-radius-bottomright:12px;
 	border-bottom-right-radius:12px;
-	width:86px;
+	width:auto;
 }
 
 /*.delete_button {
