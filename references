@@ -1,5 +1,5 @@
-Make the text area autoresize
-DONE! - http://jsfiddle.net/chim/53eAy/
+ 
+Make the text area autoresize:  http://jsfiddle.net/chim/53eAy/
 
 
 Give the buttons some color
@@ -12,3 +12,4 @@ Give the radio buttons color
 layouts, make em work
 DONE!- http://jsfiddle.net/SpSjL/
 DONE!-- make sure to put the text area in a div, and add width100%
+

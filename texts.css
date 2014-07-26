@@ -12,6 +12,9 @@
     /*border: 2px dashed #00f*/
 }
 
+/*This left right div stuff was gotten from here:;
+http://stackoverflow.com/questions/6487085/two-divs-one-fixed-width-the-other-the-rest
+*/
 #input {
 	width: 100%;
 }

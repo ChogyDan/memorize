@@ -21,5 +21,17 @@ When an answer is correctly answered, maybe when wrong too, use the time of when
 
 Maybe make sure that the targetTime is, on corrent answer, increased by a certain amount, instead of any old increase.
 
+Have a scoring displayed
+- first, percentage of text being tested
+- next, the longest time interval.
+
 START.html
 When no save is selected, continue doesn't handle this well.  Either prevent continue from being clickable, or just go straight to the text manager page.  Actually, have a <new text> option that just goes to the text manager, Kiss.
+
+
+
+Sliders: http://jqueryui.com/slider/#colorpicker
+- to control difficulty
+- to show progress through the whole text
+
+Change setup.sh to open files in order of filename, maybe *.html, then build file list, then open.
