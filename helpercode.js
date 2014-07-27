@@ -63,8 +63,7 @@ _nextItem = function() {
   return newItem;
 }
 
-_updateCorrectTime = function(line) {
-  time = Date.now();
+_updateCorrectTime = function(line, time) {
   this.targetTime[line] = time - this.lastTestedTime[line];
   this.lastCorrectTime[line] = time;
   this.lastWorked = time;

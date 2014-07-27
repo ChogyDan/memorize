@@ -1,56 +1,51 @@
 <html>                                                                  
-  <head> 
-  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
-  <link rel="stylesheet" type="text/css" href="memorize_all.css" />
-  <script type="text/javascript" src="jquery.js"></script>
-  <script type="text/javascript" src="underscore.js"></script>
-  <script type="text/javascript" src="helpercode.js"></script>
-  <script type="text/javascript">
-  $(document).ready(function() {
-    //##have a change handler which sets up localstorage
-    $("#save_selector").change(function(){
+<head> 
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="memorize_all.css" />
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="underscore.js"></script>
+<script type="text/javascript" src="helpercode.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+//##have a change handler which sets up localstorage
+$("#save_selector").change(function(){
+});
 
+$("#continue").click(function() {
+  localStorage.setItem('current', $("#save_selector").val()); //TODO move this logic to helpercode
+  window.location.href = 'memorize.html';
+});
 
-    });
-    $("#continue").click(function() {
-      localStorage.setItem('current', $("#save_selector").val()); //TODO move this logic to helpercode
-      window.location.href = 'memorize.html';
-    });
-    //Setup texts_link go to the text managing page.
-    $("#texts_link").click(function () {
-      window.location.href = 'texts.html';
-    });
-    memorizations = getMems();
-    for (var i = memorizations.length - 1; i >= 0; i--) {
-      date = new Date(memorizations[i].lastWorked);
-      $("#save_selector")
-        .append($("<option></option>")
-          .attr("value", i)
-          .text(memorizations[i].title + ": " + date.toDateString())
-        );
-    };
-    $("#delete").click(function() {
-      removeMem($("#save_selector").val());
-      location.reload();
-    });
+//Setup texts_link go to the text managing page.
+$("#texts_link").click(function () {
+  window.location.href = 'texts.html';
+});
 
+memorizations = getMems();
+for (var i = memorizations.length - 1; i >= 0; i--) {
+  date = new Date(memorizations[i].lastWorked);
+  $("#save_selector")
+    .append($("<option></option>")
+             .attr("value", i)
+             .text(memorizations[i].title + ": " + date.toDateString())
+           );
+};
+$("#delete").click(function() {
+  removeMem($("#save_selector").val());
+  location.reload();
+});
 
- });                          
+});                          
 
- </script>                                                               
- </head>                                                                
-  <body> 
+</script>                                                               
+</head>                                                                
+<body> 
   <div>This page is where you can pick up where you left off.  If this is your first time, or you want to start a new text, head to the <a href="#" id="texts_link">Text Manager</a>.</div>
-    <br />
+  <br />
 
-    <select id="save_selector">
-
-    </select>
-        <a id="continue">continue</a> <br />
-    <a href="#" id="delete" class="delete_button basics">DELETE</a>
-
-    <br />    <br />
-
-    
-  </body>
+  <select id="save_selector"></select>
+  <a id="continue">continue</a> <br />
+  <a href="#" id="delete" class="delete_button basics">DELETE</a>
+  <br /><br />
+</body>
 </html>

@@ -1,284 +1,294 @@
 
 <html>                                                                  
 <head> 
-  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
-  <link rel="stylesheet" type="text/css" href="memorize_all.css" />
-    <link rel="stylesheet" type="text/css" href="memorize.css" />
-  <script type="text/javascript" src="jquery.js"></script>
-  <script type="text/javascript" src="underscore.js"></script>
-  <script type="text/javascript" src="helpercode.js"></script>
-
-  <script type="text/javascript">
-    $(document).ready(function() {
-      var oddManOut = {
-    //TODO these variables are given dummy values for debugging purposes
-    structure: "un",
-    text: "unsetup text",
-    title: "unsetup title",
-    line: 42,
-    buttonNames: ["name1", "name2", "nam3", "name4"], 
-    setup: function(newTitle, newText, newLine) {
-      this.title = newTitle;
-      this.text = newText;
-      this.line = newLine;
-      var context = this.line-_.random(1,2);//for now, context will be of size 4, starting 1 to 2 before the line, except under certain cirumstances which follow
-      if (context>(this.text.length-4)){//if context ends up starting near the end of the text, adjust that
-        context = this.text.length-4;
-      }
-      if (context<0) { //if the text is too small, context will end up negative at this point, and should just point to the beggining.
-        context=0; 
-      }
-
-      this.display=[];
-      for (var count = 0; count < 4 && context + count < this.text.length; count++) {
-        if(context+count == this.line) {
-          this.display.push("?????");
-        } else {
-          this.display.push(this.text[context+count]);
-        }
-      };
-      this.display = this.display.join("\n");    
-
-      this.correctButton = _.random(0,3);
-      for (var i = 0, randomLine; i < 4; i++) {
-        if (i == this.correctButton) {
-          this.buttonNames[i] = this.text[this.line];
-        } else {
-          do { 
-            randomLine = _.random(0,this.text.length-1); 
-          } while(randomLine == this.line); //ie, repeat the randomLine generation if it is equal to this.line, the correct line
-          this.buttonNames[i] = this.text[randomLine];
-        }
-      };
-    },
-    testedTitle: function() {
-      return this.title;
-    },
-    testedLine: function() {
-      return this.line;
-    },
-    testedTitle: function() {
-      return this.title;
-    },
-
-    buttonsNotText: function() {
-      return true;
-    },
-    button: function(number) {
-      return this.buttonNames[number-1];
-    },
-    setGuiWith: function(text, type) {
-
-    },
-    checkCorrectButton: function(buttonNumber) {
-      if(buttonNumber != undefined) {
-        return buttonNumber-1 == this.correctButton;
-      } else {
-        return 
-      }
-
-
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="memorize_all.css" />
+<link rel="stylesheet" type="text/css" href="memorize.css" />
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="underscore.js"></script>
+<script type="text/javascript" src="helpercode.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+var oddManOut = {
+  //TODO these variables are given dummy values for debugging purposes
+  structure: "un",
+  text: "unsetup text",
+  title: "unsetup title",
+  line: 42,
+  buttonNames: ["name1", "name2", "nam3", "name4"], 
+  setup: function(newTitle, newText, newLine) {
+    this.title = newTitle;
+    this.text = newText;
+    this.line = newLine;
+    this.timeAsked = Date.now();
+    var context = this.line-_.random(1,2);//for now, context will be of size 4, starting 1 to 2 before the line, except under certain cirumstances which follow
+    if (context>(this.text.length-4)){//if context ends up starting near the end of the text, adjust that
+      context = this.text.length-4;
     }
-  };//oddManOut
-
-  var pairOneBlank = {
-    //TODO these variables are given dummy values for debugging purposes
-    structure: "un",
-    text: "unsetup text",
-    title: "unsetup title",
-    line: 42,
-    buttonNames: ["name1", "name2", "nam3", "name4"], 
-    setup: function(newTitle, newText, newLine, leftRightRandom) {
-      this.title = newTitle;
-      this.text = newText;
-      this.line = newLine;
-      this.separator = ';';
-      if(leftRightRandom == 2) {
-        this.leftRight = _.random(1);
-        console.log(this.leftRight + "this.leftRight");
-      } else if  (leftRightRandom == 1 || leftRightRandom == 0) {
-        this.leftRight = leftRightRandom;
-      } else {
-        console.log("ERROR: invalid leftRightRandom value");
-      }
-      this.left = "";
-      this.right = "";
-      /*function getOther(theLine, separator){
-        return theLine.split(separator, 2)[this.leftRight];
-      }*/
-      var context = this.line-_.random(1,2);//for now, context will be of size 4, starting 1 to 2 before the line, except under certain cirumstances which follow
-      if (context>(this.text.length-4)){//if context ends up starting near the end of the text, adjust that
-        context = this.text.length-4;
-      }
-      if (context<0) { //if the text is too small, context will end up negative at this point, and should just point to the beggining.
-        context=0; 
-      }
-      var correctAnswer = "CORRECT ANSWER HERE";
-      if(this.leftRight == 0) {
-        this.display = "?????;" + this.text[this.line].split(this.separator,2)[1];
-      } else {
-        this.display = this.text[this.line].split(this.separator,2)[0] + ";?????";
-      }
-
-      this.display=[];
-      this.display[(this.leftRight+1)%2] = this.text[this.line].split(this.separator,2)[(this.leftRight+1)%2];
-      console.log("this.display[this.leftRight] " + this.display[this.leftRight]);
-      this.display[this.leftRight] = "?????";
-    
-      this.display = this.display.join(this.separator);
-      console.log("this.display " + this.display);
-
-      this.correctButton = _.random(0,3);
-      for (var i = 0, randomLine; i < 4; i++) {
-        if (i == this.correctButton) {
-          this.buttonNames[i] = this.text[this.line].split(this.separator,2)[this.leftRight];
-        } else {
-          do { 
-            randomLine = _.random(0,this.text.length-1); 
-          } while(randomLine == this.line); //ie, repeat the randomLine generation if it is equal to this.line, the correct line
-          this.buttonNames[i] = this.text[randomLine].split(this.separator,2)[this.leftRight];
-        }
-      };
-    },
-    testedTitle: function() {
-      return this.title;
-    },
-    testedLine: function() {
-      return this.line;
-    },
-    testedTitle: function() {
-      return this.title;
-    },
-
-    buttonsNotText: function() {
-      return true;
-    },
-    button: function(number) {
-      return this.buttonNames[number-1];
-    },
-    setGuiWith: function(text, type) {
-
-    },
-    checkCorrectButton: function(buttonNumber) {
-      if(buttonNumber != undefined) {
-        return buttonNumber-1 == this.correctButton;
-      }
-
-
+    if (context<0) { //if the text is too small, context will end up negative at this point, and should just point to the beggining.
+      context=0; 
     }
-  };//pairOneBlank
 
+    this.display=[];
+    for (var count = 0; count < 4 && context + count < this.text.length; count++) {
+      if(context+count == this.line) {
+        this.display.push("?????");
+      } else {
+        this.display.push(this.text[context+count]);
+      }
+    };
+    this.display = this.display.join("\n");    
 
-  function reward() {
-    $("#reward").show().delay(1000).slideUp( 300 );
+    this.correctButton = _.random(0,3);
+    for (var i = 0, randomLine; i < 4; i++) {
+      if (i == this.correctButton) {
+        this.buttonNames[i] = this.text[this.line];
+      } else {
+        do { 
+          randomLine = _.random(0,this.text.length-1); 
+        } while(randomLine == this.line); //ie, repeat the randomLine generation if it is equal to this.line, the correct line
+        this.buttonNames[i] = this.text[randomLine];
+      }
+    };
+  },
+  testedTitle: function() {
+    return this.title;
+  },
+  testedLine: function() {
+    return this.line;
+  },
+  testedTitle: function() {
+    return this.title;
+  },
 
-  }
-  function punish() {
-    $("#punish").show().delay(1000).slideUp( 300 );
-  }
+  buttonsNotText: function() {
+    return true;
+  },
+  button: function(number) {
+    return this.buttonNames[number-1];
+  },
+  setGuiWith: function(text, type) {
 
-  function handleResult(correctness, line) {
-    if (correctness) {
-      current.updateCorrectTime(line);
-      reward();
+  },
+  checkCorrectButton: function(buttonNumber) {
+    if(buttonNumber != undefined) {
+      return buttonNumber-1 == this.correctButton;
     } else {
-      current.reduceTarget(line);
-      punish();
+      return 
     }
-    saveMem(current);
+
+
   }
+};//oddManOut
 
-  {//strategyObject scope
-    var strategyObject;
-    /*$("#submit").click(function (e) {
-      handleResult(strategyObject.checkCorrectButton(), strategyObject.line);
-      testPicker();
-    });*///TODO this is code for typed responses rather than multiple choice
+var pairOneBlank = {
+  //TODO these variables are given dummy values for debugging purposes
+  structure: "un",
+  text: "unsetup text",
+  title: "unsetup title",
+  line: 42,
+  buttonNames: ["name1", "name2", "nam3", "name4"], 
+  setup: function(newTitle, newText, newLine, leftRightRandom) {
+    this.title = newTitle;
+    this.text = newText;
+    this.line = newLine;
+    this.timeAsked = Date.now();
+    this.separator = ';';
+    if(leftRightRandom == 2) {
+      this.leftRight = _.random(1);
+      console.log(this.leftRight + "this.leftRight");
+    } else if  (leftRightRandom == 1 || leftRightRandom == 0) {
+      this.leftRight = leftRightRandom;
+    } else {
+      console.log("ERROR: invalid leftRightRandom value");
+    }
+    this.left = "";
+    this.right = "";
+    /*function getOther(theLine, separator){
+      return theLine.split(separator, 2)[this.leftRight];
+    }*/
+    var context = this.line-_.random(1,2);//for now, context will be of size 4, starting 1 to 2 before the line, except under certain cirumstances which follow
+    if (context>(this.text.length-4)){//if context ends up starting near the end of the text, adjust that
+      context = this.text.length-4;
+    }
+    if (context<0) { //if the text is too small, context will end up negative at this point, and should just point to the beggining.
+      context=0; 
+    }
+    var correctAnswer = "CORRECT ANSWER HERE";
+    if(this.leftRight == 0) {
+      this.display = "?????;" + this.text[this.line].split(this.separator,2)[1];
+    } else {
+      this.display = this.text[this.line].split(this.separator,2)[0] + ";?????";
+    }
+
+    this.display=[];
+    this.display[(this.leftRight+1)%2] = this.text[this.line].split(this.separator,2)[(this.leftRight+1)%2];
+    console.log("this.display[this.leftRight] " + this.display[this.leftRight]);
+    this.display[this.leftRight] = "?????";
+
+    this.display = this.display.join(this.separator);
+    console.log("this.display " + this.display);
+
+    this.correctButton = _.random(0,3);
+    for (var i = 0, randomLine; i < 4; i++) {
+      if (i == this.correctButton) {
+        this.buttonNames[i] = this.text[this.line].split(this.separator,2)[this.leftRight];
+      } else {
+        do { 
+          randomLine = _.random(0,this.text.length-1); 
+        } while(randomLine == this.line); //ie, repeat the randomLine generation if it is equal to this.line, the correct line
+        this.buttonNames[i] = this.text[randomLine].split(this.separator,2)[this.leftRight];
+      }
+    };
+  },
+  testedTitle: function() {
+    return this.title;
+  },
+  testedLine: function() {
+    return this.line;
+  },
+  testedTitle: function() {
+    return this.title;
+  },
+
+  buttonsNotText: function() {
+    return true;
+  },
+  button: function(number) {
+    return this.buttonNames[number-1];
+  },
+  setGuiWith: function(text, type) {
+
+  },
+  checkCorrectButton: function(buttonNumber) {
+    if(buttonNumber != undefined) {
+      return buttonNumber-1 == this.correctButton;
+    }
+
+
+  }
+};//pairOneBlank
+
+
+function reward() {
+  $("#reward").show().delay(1000).slideUp( 300 );
+
+}
+function punish() {
+  $("#punish").show().delay(1000).slideUp( 300 );
+}
+
+function handleResult(correctness, line, time) {
+  if (correctness) {
+    current.updateCorrectTime(line, time);
+    reward();
+  } else {
+    current.reduceTarget(line);
+    punish();
+  }
+  saveMem(current);
+}
+
+{//strategyObject scope
+var strategyObject;
+/*$("#submit").click(function (e) {
+  handleResult(strategyObject.checkCorrectButton(), strategyObject.line, strategyObject.timeAsked);
+  testPicker();
+});*///TODO this is code for typed responses rather than multiple choice
+for (var i = 1; i <= 4; i++) {
+  $("#button"+i).click(function (e) {
+  //console.log(i);//TODO*** here you are
+
+  handleResult(strategyObject.checkCorrectButton($(this).data('button')),  strategyObject.line, strategyObject.timeAsked);
+  
+  testPicker();
+
+  }).data('button', i);
+
+};
+function testPicker() {
+  if(current.testType == "poem") {
+    strategyObject = oddManOut;
+  } else if (current.testType == "vocab") {
+    strategyObject = pairOneBlank;
+  } else{
+    console.log("ERROR: unhandled test type");
+  };
+  strategyObject.setup(current.title, current.text, current.nextItem(), 0);
+  $("#display").html(strategyObject.display.replace(/\n/g,"<br />"));
+  if(current.buttonsNotText) {
+    $("#input").hide();
+    $("#submit").hide();
     for (var i = 1; i <= 4; i++) {
-      $("#button"+i).click(function (e) {
-      //console.log(i);//TODO*** here you are
-
-      handleResult(strategyObject.checkCorrectButton($(this).data('button')),  strategyObject.line);
-      
-      testPicker();
-
-      }).data('button', i);
+      $("#button"+i).show();
+      $("#button"+i).html(strategyObject.button(i));
 
     };
-    function testPicker() {
-      if(current.testType == "poem") {
-        strategyObject = oddManOut;
-      } else if (current.testType == "vocab") {
-        strategyObject = pairOneBlank;
-      } else{
-        console.log("ERROR: unhandled test type");
-      };
-      strategyObject.setup(current.title, current.text, current.nextItem(), 0);
-      $("#display").html(strategyObject.display.replace(/\n/g,"<br />"));
-      if(current.buttonsNotText) {
-        $("#input").hide();
-        $("#submit").hide();
-        for (var i = 1; i <= 4; i++) {
-          $("#button"+i).show();
-          $("#button"+i).html(strategyObject.button(i));
+  } else {
+    $("#input").show().clear();
+    $("#submit").show();
+    for (var i = 1; i <= 4; i++) {
+      $("#button"+i).hide();
+    };
+  }
+  var workingcount = current.workingSet.length;
+  var noncount = current.unWorkingSet.length;
+  $("#complete_percent").html(Math.floor(workingcount/(workingcount+noncount)*100)+"%");
+}
+}//end of strategyObject scope
 
-        };
-      } else {
-        $("#input").show().clear();
-        $("#submit").show();
-        for (var i = 1; i <= 4; i++) {
-          $("#button"+i).hide();
-        };
+
+var testText;
+var testTitle;
+var memorizingMetrics;
+var current;
+function mainInit() {
+  testText = "a\nb\nc\nd\ne\nf".split("\n");
+  testTitle = "alphabet";
+  memorizationArray = getMems();
+  current = memorizationArray[JSON.parse(localStorage['current'])];
+  /*if(localStorage['memorizingMetrics'] == null) {
+    memorizingMetrics = {
+      data: "junk",
+      save: function(title, line, scoreModifier) {
+        alert("save the memorizingMetrics resuls!");
       }
     }
-  }//end of strategyObject scope
-
-
-  var testText;
-  var testTitle;
-  var memorizingMetrics;
-  var current;
-  function mainInit() {
-    testText = "a\nb\nc\nd\ne\nf".split("\n");
-    testTitle = "alphabet";
-    memorizationArray = getMems();
-    current = memorizationArray[JSON.parse(localStorage['current'])];
-    /*if(localStorage['memorizingMetrics'] == null) {
-      memorizingMetrics = {
-        data: "junk",
-        save: function(title, line, scoreModifier) {
-          alert("save the memorizingMetrics resuls!");
-        }
-      }
-    } else {
-      memorizingMetrics = JSON.parse(localStorage['memorizingMetrics']);
-    }*/
-    //workingState = JSON.parse(localStorage.getItem('newState'));
-  }
-  mainInit();
-  testPicker();
+  } else {
+    memorizingMetrics = JSON.parse(localStorage['memorizingMetrics']);
+  }*/
+  //workingState = JSON.parse(localStorage.getItem('newState'));
+}
+mainInit();
+testPicker();
 
 
 });                                    
 </script>                                                               
 </head>                                                                
 <body> 
-<div class="container">
-<div class="right">
-  <div id="reward" style="display: none;">Correct!</div>
-  <div id="punish" style="display: none;">WRONG</div>
+  <div class="container">
+    <div class="right">
+      <div id="correctness">
+        <span id="reward" style="display: none;">Correct!</span>
+        <span id="punish" style="display: none;">WRONG</span>
+      </div>
+      <div id="scores">
+        <span id="complete_percent">DUMMY PERCENT</span>
+        <span id="max_interval"></span>
+      </div>
+    </div>
+    <div class="left">
+      <div id="display">test stuff</div>
+      <textarea id="input"></textarea>
+      <div id="buttons">
+        <button id="button1" /></button><br />
+        <button id="button2" /></button><br />
+        <button id="button3" /></button><br />
+        <button id="button4" /></button><br />
+      </div>
+      <button id="submit">Submit</button>
+    </div>
   </div>
-  <div class="left">
-  <div id="display">test stuff</div>
-  <textarea id="input"></textarea>
-  <div id="buttons">
-   <button id="button1" /></button><br />
-   <button id="button2" /></button><br />
-   <button id="button3" /></button><br />
-   <button id="button4" /></button><br />
- </div>
- <button id="submit">Submit</button>
- </div>
-</div>
 </body>
 </html>
