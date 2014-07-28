@@ -51,7 +51,7 @@ _nextItem = function() {
   for (var i = this.workingSet.length - 1; i >= 0; i--) {
     workingItem = this.workingSet[i];
     if(time-this.lastCorrectTime[workingItem] > this.targetTime[workingItem]){
-      console.log(time-this.lastCorrectTime[workingItem] + " > " + this.targetTime[workingItem]);
+      //console.log(time-this.lastCorrectTime[workingItem] + " > " + this.targetTime[workingItem]);
       return workingItem;
     }
   };

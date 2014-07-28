@@ -234,6 +234,14 @@ function testPicker() {
   var workingcount = current.workingSet.length;
   var noncount = current.unWorkingSet.length;
   $("#complete_percent").html(Math.floor(workingcount/(workingcount+noncount)*100)+"%");
+  if(noncount == 0) {
+    console.log("noncount");
+    var shortestTime = Date.now();
+    for (var i = current.lastCorrectTime.length - 1; i >= 0; i--) {
+      if(current.lastCorrectTime[i] < shortestTime) shortestTime = current.lastCorrectTime[i];
+    };
+    $("#time_score").html((Date.now() - shortestTime)/60000 + " minutes");
+  }
 }
 }//end of strategyObject scope
 
@@ -274,8 +282,8 @@ testPicker();
         <span id="punish" style="display: none;">WRONG</span>
       </div>
       <div id="scores">
-        <span id="complete_percent">DUMMY PERCENT</span>
-        <span id="max_interval"></span>
+        <span id="complete_percent">DUMMY PERCENT</span><br />
+        <span id="time_score"></span>
       </div>
     </div>
     <div class="left">
