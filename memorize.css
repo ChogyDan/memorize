@@ -1,6 +1,7 @@
 .left {
     overflow: hidden;
     min-height: 50px;
+    margin-left: 50px;
     /*border: 2px dashed #f0f*/
 }
 
@@ -8,7 +9,7 @@
     float: right;
     width: 250px;
     min-height: 50px;
-    margin-left: 10px;
+    
     /*border: 2px dashed #00f*/
 }
 

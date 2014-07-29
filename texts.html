@@ -116,7 +116,7 @@ $("#memorize").click(function () {
   }
 
   var newMemorization = new InstanceOfMemorization( getSelectedTitle(), 
-                                                    getSelectedText().split('\n'),
+                                                    getSelectedText().replace(/\n\s*\n/g, "\n").split('\n'),
                                                     $("#test_selector input:checked").val(),
                                                     true );
   localStorage.setItem('current', newMemorization.index);

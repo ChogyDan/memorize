@@ -56,6 +56,10 @@ _nextItem = function() {
     }
   };
   newItem = this.unWorkingSet.pop();//TODO make this a bit random
+  if(newItem == null) {
+  	alert("You are doing great! You need to wait before you can continue.");
+  	return;
+  }
   this.workingSet.push(newItem);
   this.lastCorrectTime[newItem] = Date.now();
   this.lastTestedTime[newItem] = Date.now();
