@@ -48,17 +48,21 @@ function setupIOMFunctions (IOM) {
 
 _nextItem = function() {
   time = Date.now();
-  for (var i = this.workingSet.length - 1; i >= 0; i--) {
+  workingPossibilities = [];
+  for (var i = 0; i < this.workingSet.length; i++) {
     workingItem = this.workingSet[i];
     if(time-this.lastCorrectTime[workingItem] > this.targetTime[workingItem]){
       //console.log(time-this.lastCorrectTime[workingItem] + " > " + this.targetTime[workingItem]);
-      return workingItem;
+      workingPossibilities.push(workingItem);
     }
   };
+  if(workingPossibilities.length > 0) {
+  	return getRandomFromArray(workingPossibilities);
+  }
   newItem = this.unWorkingSet.pop();//TODO make this a bit random
   if(newItem == null) {
-  	alert("You are doing great! You need to wait before you can continue.");
-  	return;
+  	alert("You are doing great! You should wait before you continue.");
+  	return getRandomFromArray(this.workingSet);
   }
   this.workingSet.push(newItem);
   this.lastCorrectTime[newItem] = Date.now();
@@ -68,8 +72,13 @@ _nextItem = function() {
 }
 
 _updateCorrectTime = function(line, time) {
+	//console.log(time);
+	//console.log(this.targetTime[line] + " before");
+	//console.log(this.lastTestedTime[line]);
   this.targetTime[line] = time - this.lastTestedTime[line];
+  //	console.log(this.targetTime[line] + " after");
   this.lastCorrectTime[line] = time;
+  this.lastTestedTime[line] = time;
   this.lastWorked = time;
 
 }
@@ -106,4 +115,8 @@ function removeMem(index) {
   mems = getMems();
   mems.splice(index, 1);
   saveMems(mems);
+}
+
+function getRandomFromArray(theArray){
+	return theArray[_.random(0, theArray.length-1)];
 }

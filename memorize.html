@@ -263,7 +263,7 @@ function testPicker() {
     for (var i = current.targetTime.length - 1; i >= 0; i--) {
       if(current.targetTime[i] < shortestTime) shortestTime = current.targetTime[i];
     };
-    $("#time_score").html(shortestTime/60000 + " minutes");
+    $("#time_score").html((shortestTime/60000).toFixed(2) + " minutes");
   }
 }
 }//end of strategyObject scope
