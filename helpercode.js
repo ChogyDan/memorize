@@ -56,7 +56,8 @@ _nextItem = function() {
       workingPossibilities.push(workingItem);
     }
   };
-  if(workingPossibilities.length > 0) {
+  console.log(workingPossibilities.length + " is the number of testable lines");
+  if(workingPossibilities.length > 2) {
   	return getRandomFromArray(workingPossibilities);
   }
   newItem = this.unWorkingSet.pop();//TODO make this a bit random
@@ -65,8 +66,8 @@ _nextItem = function() {
   	return getRandomFromArray(this.workingSet);
   }
   this.workingSet.push(newItem);
-  this.lastCorrectTime[newItem] = Date.now();
-  this.lastTestedTime[newItem] = Date.now();
+  this.lastCorrectTime[newItem] = time;
+  this.lastTestedTime[newItem] = time;
   this.targetTime[newItem] = 0;
   return newItem;
 }

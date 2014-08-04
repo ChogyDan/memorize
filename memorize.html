@@ -40,15 +40,17 @@ var oddManOut = {
     };*/
     var contextStart = newLine - preContext;
     if(contextStart < 0) {
-    	contextStart = 0;
-      postContext++;//ensure there is some context if this is close to the beginning
+      postContext -= contextStart;//ensure there is some context if this is close to the beginning
+      contextStart = 0;
     }
     var contextEnd = newLine + postContext + 1;
     if(contextEnd > this.text.length) {
-      contextEnd = this.text.length;
-      if(contextStart != 0) {
-        contextStart--;/*again, ensure some context but at the end. Adjust contextStart instead if preContext because contextStart has been already setup.*/
+      if(contextStart > contextEnd - this.text.length) {
+        contextStart -= contextEnd - this.text.length;/*again, ensure some context but at the end. Adjust contextStart instead if preContext because contextStart has been already setup.*/
+      } else { 
+        contextStart = 0; 
       }
+      contextEnd = this.text.length;
     }
     console.log(contextStart + "/" + newLine + "/" + contextEnd);
     for (var i = contextStart; i < contextEnd; i++) {
@@ -109,7 +111,7 @@ var pairOneBlank = {
   title: "unsetup title",
   line: 42,
   buttonNames: ["name1", "name2", "nam3", "name4"], 
-  setup: function(newTitle, newText, newLine, leftRightRandom) {
+  setup: function(newTitle, newText, newLine, leftRightRandom, junk) {
     this.title = newTitle;
     this.text = newText;
     this.line = newLine;
@@ -228,15 +230,28 @@ for (var i = 1; i <= 4; i++) {
 
 };
 function testPicker() {
-  if(current.testType == "poem") {
+	var leftContext;
+  var rightContext;
+  if(current.testType == "2poem2") {
     strategyObject = oddManOut;
-    strategyObject.setup(current.title, current.text, current.nextItem(), 1, 1);
+    leftContext = 2;
+    rightContext = 2;
+  } else if (current.testType == "2poem") {
+    strategyObject = oddManOut;
+    leftContext = 2;
+    rightContext = 0;
+    console.log("2 pre context");
+  } else if (current.testType == "poem2") {
+    strategyObject = oddManOut;
+    leftContext = 0;
+    rightContext = 2;    
   } else if (current.testType == "vocab") {
     strategyObject = pairOneBlank;
-    strategyObject.setup(current.title, current.text, current.nextItem(), 0);
+    leftContext = 0;
   } else{
     console.log("ERROR: unhandled test type");
   };
+  strategyObject.setup(current.title, current.text, current.nextItem(), leftContext, rightContext);
 
   $("#display").html(strategyObject.display.replace(/\n/g,"<br />"));
   if(current.buttonsNotText) {
