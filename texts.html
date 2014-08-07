@@ -58,7 +58,7 @@ function getSelectedText() {
 }
 
 $("#input").on('keyup', function (e) {
-  $(this).css('height', 'auto');
+  //$(this).css('height', 'auto');//TODO figure out what this did, I disabled it because it was causing the page to scroll to the top.
   $(this).height( this.scrollHeight );
   console.log( this.scrollWidth );
 });
