@@ -54,7 +54,7 @@ for (var i = memorizations.length - 1; i >= 0; i--) {
   $("#save_selector")
     .append($("<option></option>")
              .attr("value", i)
-             .text(memorizations[i].title + ": " + date.toDateString())
+             .text(memorizations[i].title + "->" + memorizations[i].testType + ": " + date.toDateString())
            );
 };
 
@@ -88,14 +88,14 @@ $("#delete").click(function() {
   <select id="titles">
     
   </select>
-  <a id="memorize" class="basics right_arrow">Begin memorizing!</a>
+  <a id="memorize" class="basics right_arrow">Begin new memorization!</a>
 </div>
   </div>
   <div class="left">
   <br />
 
   <select id="save_selector"></select>
-  <a id="continue">continue</a> <br />
+  <a id="continue">Continue previous memorization</a> <br />
   <a href="#" id="delete" class="delete_button basics">DELETE</a>
   <br /><br />
   </div>

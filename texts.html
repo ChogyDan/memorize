@@ -31,9 +31,10 @@ var textNames = pullArrayFromLS('textNames');
 var textFolderTexts = pullArrayFromLS('textFolderTexts'); 
 var flagNewTextCurrentlyBeingEdited = true;
 var newTextSave = "";
+var textIndex;
 resetToNewText();
 
-function addTextToPage(usTextName) {
+function addTitleToPage(usTextName) {
   $("select").append("<option>"+usTextName+"</option>");
 }
 
@@ -44,7 +45,16 @@ function resetToNewText () {
   $("#input").keyup();
 }
 
+var saveScheduled = false;
+function delayedSave() {
+	if(saveScheduled == false) {
+		setTimeout(function() {save(); saveScheduled = false; }, 1000);
+		saveScheduled = true;
+	}
+}
+
 function save () {
+	textFolderTexts[textIndex] = $("#input").val();
   pushArrayToLS(textNames, 'textNames');
   pushArrayToLS(textFolderTexts, 'textFolderTexts');
 }
@@ -58,42 +68,41 @@ function getSelectedText() {
 }
 
 $("#input").on('keyup', function (e) {
-  //$(this).css('height', 'auto');//TODO figure out what this did, I disabled it because it was causing the page to scroll to the top.
   $(this).height( this.scrollHeight );
-  console.log( this.scrollWidth );
+  delayedSave();
 });
 $("#input").keyup();
 
-$("#save").click(function () {
-  while(true){//todo: This while loop gets a name.  Change this to something cool.
-    var newTextName=prompt("Please enter a name for this text. Make it new and not blank, otherwise this question will repeat.");
-    if(newTextName!=null && newTextName!='' && _.indexOf(textNames, newTextName)==-1) {
-      textFolderTexts.push($("#input").val());
-      textNames.push(newTextName);
-      save();
-      addTextToPage(newTextName);
-      $("select").val(newTextName);
-      flagNewTextCurrentlyBeingEdited = false;
-      newTextSave = "";
-      break;
-    }
+$("#newText").click(function () {
+  
+  var newTextName=$("#newTitle").val();
+  console.log(newTextName);
+  if(newTextName!=null && newTextName!='' && _.indexOf(textNames, newTextName)==-1) {
+    textNames.push(newTextName);
+    addTitleToPage(newTextName);
+    $("select").val(newTextName);
+    textIndex = textNames.length - 1;
+    $("#input").val("");
+    save();
+  } else {
+  	alert("Please a unique and valid text name");
   }
+
 });
 
 //setup the <select> with the currently saved texts
 _.each(textNames, function(name, index, textFolder) {
-  addTextToPage(name);
+  addTitleToPage(name);
 });
 
 $("select").change(function() {
+	save();
   titleOfTextToSwitchTo = $(this).val();
-  if(flagNewTextCurrentlyBeingEdited == true) newTextSave = $("#input").val();
-  if(titleOfTextToSwitchTo != "(new text)") {
-    $("#input").val(textFolderTexts[_.indexOf(textNames, titleOfTextToSwitchTo)]);
-    flagNewTextCurrentlyBeingEdited = false;
-  } else resetToNewText();
+  textIndex = _.indexOf(textNames, titleOfTextToSwitchTo);
+  $("#input").val(textFolderTexts[textIndex]);
   $("#input").keyup();
 });
+$("select").change();
 
 $("#delete").click(function () {
   titleToDelete = getSelectedTitle();
@@ -105,43 +114,29 @@ $("#delete").click(function () {
   resetToNewText();
 });
 
-$("#memorize").click(function () {
-  if(getSelectedTitle() == "(new text)") {
-    alert("Please select a text");
-    return;
-  }
-  if ($("#test_selector input:checked").val() == undefined) {
-    alert("Please select a type for the text");
-    return;
-  }
-
-  var newMemorization = new InstanceOfMemorization( getSelectedTitle(), 
-                                                    getSelectedText().replace(/\n\s*\n/g, "\n").split('\n'),
-                                                    $("#test_selector input:checked").val(),
-                                                    true );
-  localStorage.setItem('current', newMemorization.index);
-  window.location.href = 'memorize.html';
+$("#back").click(function () {
+  save();
+  window.location.href = 'start.html';
 });
+window.addEventListener("beforeunload", function( event ) {
+  save();
+});
+
 });                                    
 </script>                                                               
 </head>                                                                
 <body> 
-<h3>To get started; enter some text, save it, select a structure for the text, start memorizing.</h3>
+<h3>Here you can save and edit texts.  Hit the back button when you are done.</h3>
 <div id="controls" class="right">
 
-  <select>
-    <option>(new text)</option>
+  <select id="textTitles">
   </select>
   <br />
-  <a id="save" class="basics">Save</a><a id="delete" class="delete_button basics">Delete</a> 
+  <a id="delete" class="delete_button basics">Delete this text</a> <br />
+  <textarea id="newTitle" rows="1"></textarea> <br />
+  <a id="newText" class="delete_button basics">Start new text</a>
   <br />
-    <div id="test_selector">
-    <input type="radio" name="structure" value="2poem2" />Poem with 2 pre and post context <br />
-    <input type="radio" name="structure" value="2poem" />Poem with 2 pre context <br />
-    <input type="radio" name="structure" value="poem2" />Poem with 2 post context <br />
-    <input type="radio" name="structure" value="vocab" />Vocab List <br />
-  </div>
-  <a id="memorize" class="basics right_arrow">Begin memorizing!</a>
+  <a id="back" class="basics left_arrow">Back</a>
 </div>
 <div class="left"><textarea id="input"></textarea></div>  
 </body>
