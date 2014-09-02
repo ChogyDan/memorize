@@ -1,0 +1,48 @@
+#content {
+	border: 2px solid black;
+	width: 90% ;
+  margin-left: auto ;
+  margin-right: auto ;
+
+ 	-webkit-border-bottom-right-radius:12px;
+	-moz-border-radius-bottomright:12px;
+	border-bottom-right-radius:12px;
+
+ 	-webkit-border-top-right-radius:12px;
+	-moz-border-radius-topright:12px;
+	border-top-right-radius:12px;
+
+ 	-webkit-border-bottom-left-radius:12px;
+	-moz-border-radius-bottomleft:12px;
+	border-bottom-left-radius:12px;
+
+  -webkit-border-top-left-radius:12px;
+	-moz-border-radius-topleft:12px;
+	border-top-left-radius:12px;
+}
+
+.inner_content {
+	border: 2px solid black;
+
+  margin-left: 15px ;
+  margin-right: 15px ;
+  margin-top: 15px ;
+  margin-bottom: 15px ;
+  padding: 15px;
+
+ 	-webkit-border-bottom-right-radius:12px;
+	-moz-border-radius-bottomright:12px;
+	border-bottom-right-radius:12px;
+
+ 	-webkit-border-top-right-radius:12px;
+	-moz-border-radius-topright:12px;
+	border-top-right-radius:12px;
+
+ 	-webkit-border-bottom-left-radius:12px;
+	-moz-border-radius-bottomleft:12px;
+	border-bottom-left-radius:12px;
+
+  -webkit-border-top-left-radius:12px;
+	-moz-border-radius-topleft:12px;
+	border-top-left-radius:12px;
+}

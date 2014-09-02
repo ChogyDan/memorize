@@ -2,6 +2,7 @@
 <head> 
 <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 <link rel="stylesheet" type="text/css" href="memorize_all.css" />
+<link rel="stylesheet" type="text/css" href="start.css" />
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="underscore.js"></script>
 <script type="text/javascript" src="helpercode.js"></script>
@@ -73,31 +74,24 @@ $("#delete").click(function() {
 </script>                                                               
 </head>                                                                
 <body> 
-  <div>This page is where you can pick up where you left off, or start with a new text and/or strategy.  To add a new text, head to <a href="#" id="texts_link">Text Manager</a>.</div>
-  <div class="right">
-  <div id="controls" class="right">
-
-
-  <br />
-    <div id="test_selector">
-    <input type="radio" name="structure" value="2poem2" />Poem with 2 pre and post context <br />
-    <input type="radio" name="structure" value="2poem" />Poem with 2 pre context <br />
-    <input type="radio" name="structure" value="poem2" />Poem with 2 post context <br />
-    <input type="radio" name="structure" value="vocab" />Vocab List <br />
-  </div>
+<div id="content">
+<div class="inner_content">
+  This page is where you can pick up where you left off, or start with a new text and/or strategy.  To add a new text, head to <a href="#" id="texts_link">Text Manager</a>.
+</div><div class="inner_content">
   <select id="titles">
-    
   </select>
-  <a id="memorize" class="basics right_arrow">Begin new memorization!</a>
-</div>
+  <div id="test_selector">
+	  <input type="radio" name="structure" value="2poem2" />Poem with 2 pre and post context <br />
+	  <input type="radio" name="structure" value="2poem" />Poem with 2 pre context <br />
+	  <input type="radio" name="structure" value="poem2" />Poem with 2 post context <br />
+	  <input type="radio" name="structure" value="vocab" />Vocab List <br />
   </div>
-  <div class="left">
-  <br /> <br />
-
+  <a id="memorize" class="basics right_arrow">Begin new memorization!</a>
+</div><div class="inner_content">
   <select id="save_selector"></select>
   <a id="continue">Continue previous memorization</a> <br />
   <a href="#" id="delete" class="delete_button basics">DELETE</a>
-  <br /><br />
-  </div>
+</div>
+</div>
 </body>
 </html>

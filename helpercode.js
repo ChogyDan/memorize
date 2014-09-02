@@ -57,19 +57,20 @@ _nextItem = function() {
     }
   };
   console.log(workingPossibilities.length + " is the number of testable lines");
-  if(workingPossibilities.length > 2) {
+  if(workingPossibilities.length > 4) {
   	return getRandomFromArray(workingPossibilities);
   }
   newItem = this.unWorkingSet.pop();//TODO make this a bit random
-  if(newItem == null) {
+  if(newItem == null) {//The content of this if is incorrect
   	alert("You are doing great! You should wait before you continue.");
   	return getRandomFromArray(this.workingSet);
+  } else {
+    this.workingSet.push(newItem);
+  	this.lastCorrectTime[newItem] = time;
+  	this.lastTestedTime[newItem] = time;
+  	this.targetTime[newItem] = 0;
+  	return newItem;
   }
-  this.workingSet.push(newItem);
-  this.lastCorrectTime[newItem] = time;
-  this.lastTestedTime[newItem] = time;
-  this.targetTime[newItem] = 0;
-  return newItem;
 }
 
 _updateCorrectTime = function(line, time) {
