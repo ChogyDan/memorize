@@ -79,11 +79,12 @@ _updateCorrectTime = function(line, time) {
 	and having a huge increase in target time.  For now, this is ok.  Maybe in the future, base it
 	on something else, like when the program is running?  */
 	var potentialNewTarget = time - this.lastTestedTime[line];
-	if (potentialNewTarget < 1.2*this.targetTime[line]) {
+	if (potentialNewTarget < 1.2*this.targetTime[line] || this.targetTime[line] < 10000) {
 		this.targetTime[line] = potentialNewTarget;
 	} else {
 		this.targetTime[line] = 1.2*this.targetTime[line];
-		console.log("time over target!");
+		console.log("time over target! " + this.targetTime[line]);
+		//if (this.targetTime[line]==0) console.log("ERROR: TARGET TIME FAILURE");
 	}
   this.lastCorrectTime[line] = time;
   this.lastTestedTime[line] = time;
