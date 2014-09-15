@@ -74,11 +74,17 @@ _nextItem = function() {
 }
 
 _updateCorrectTime = function(line, time) {
-	//console.log(time);
-	//console.log(this.targetTime[line] + " before");
-	//console.log(this.lastTestedTime[line]);
-  this.targetTime[line] = time - this.lastTestedTime[line];
-  //	console.log(this.targetTime[line] + " after");
+	/*//TODO this limits target time to an increase of %20 each time you get it correct.  
+	That addresses just not using the program for a few days, then coming back, gettting it right, 
+	and having a huge increase in target time.  For now, this is ok.  Maybe in the future, base it
+	on something else, like when the program is running?  */
+	var potentialNewTarget = time - this.lastTestedTime[line];
+	if (potentialNewTarget < 1.2*this.targetTime[line]) {
+		this.targetTime[line] = potentialNewTarget;
+	} else {
+		this.targetTime[line] = 1.2*this.targetTime[line];
+		console.log("time over target!");
+	}
   this.lastCorrectTime[line] = time;
   this.lastTestedTime[line] = time;
   this.lastWorked = time;
