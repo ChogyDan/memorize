@@ -16,6 +16,9 @@ need to be scrubbed out at some point from the text, so that they aren't include
 OR, at least new lines need to be displayed correctly in the question area (ie, they need to be converted to <br>s), and also, there shouldn't be more than one newline in the correct answers area
 
 MEMORIZE.HTML
+Somehow deal with long gaps
+- ignore page reload gaps
+- only allow a maximum increase
 
 
 START.html

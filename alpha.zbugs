@@ -19,7 +19,17 @@ MEMORIZE.HTML
 Somehow deal with long gaps
 - ignore page reload gaps
 - only allow a maximum increase
+Include a Leitner esc, method, with different buckets
+- one bucket of the wrongs
+- one bucket of the corrects, working on time dilation
+- one bucket of completes, for the chosen time interval
 
+Shortcut interval increase, if wrong bucket is empty
+
+Maybe ask silly questions if there hasn't been an interval long enough?
+
+log distribution: http://stackoverflow.com/questions/3745760/java-generating-a-random-numbers-with-a-logarithmic-distribution
+- remember, the chosen answer there is incorrect in the end
 
 START.html
 When no save is selected, continue doesn't handle this well.  Either prevent continue from being clickable, or just go straight to the text manager page.  Actually, have a <new text> option that just goes to the text manager, KISS.

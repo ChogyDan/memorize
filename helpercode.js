@@ -79,10 +79,10 @@ _updateCorrectTime = function(line, time) {
 	and having a huge increase in target time.  For now, this is ok.  Maybe in the future, base it
 	on something else, like when the program is running?  */
 	var potentialNewTarget = time - this.lastTestedTime[line];
-	if (potentialNewTarget < 1.2*this.targetTime[line] || this.targetTime[line] < 10000) {
+	if (potentialNewTarget < 2*this.targetTime[line] || this.targetTime[line] < 10000) {
 		this.targetTime[line] = potentialNewTarget;
 	} else {
-		this.targetTime[line] = 1.2*this.targetTime[line];
+		this.targetTime[line] = 1.5*this.targetTime[line];
 		console.log("time over target! " + this.targetTime[line]);
 		//if (this.targetTime[line]==0) console.log("ERROR: TARGET TIME FAILURE");
 	}
@@ -127,5 +127,7 @@ function removeMem(index) {
 }
 
 function getRandomFromArray(theArray){
-	return theArray[_.random(0, theArray.length-1)];
+	var random = _.random(0, theArray.length-1);
+	console.log("random is: " + random);
+	return theArray[random];
 }
