@@ -26,10 +26,16 @@ function InstanceOfMemorization (title, text, structure, buttonsNotText) {
   this.testType = structure;
   this.buttonsNotText = buttonsNotText;
   this.lastWorked = Date.now();
+  this.prioritySet = [];
+  this.mainSet = [];
+  this.deferredSet = [];
+  this.minInterval = 2000;
+  this.maxInterval = 4000;
   this.workingSet = [];
   this.unWorkingSet = [];
   for (var i = text.length -1; i >= 0; i--) {
     this.unWorkingSet.push(i);
+    this.prioritySet.push(i);
   };
   this.lastCorrectTime = [];
   this.lastTestedTime = [];
@@ -71,6 +77,44 @@ _nextItem = function() {
   	this.targetTime[newItem] = 0;
   	return newItem;
   }
+}
+
+scanOverInterval = function(set, interval) {
+	returnSet = [];
+	time = Date.now();
+	for (var i = 0; i < set.length; i++) {
+		currentInterval = time - this.lastCorrectTime[set[i]];
+		if(currentInterval >= interval) {
+			returnSet.push(set[i]);
+		}
+	};
+	console.log("scanOverInterval results");
+	console.log(returnSet);
+	return returnSet;
+}
+
+_nextItemNEW = function() {
+	time = Date.now();
+	//scan in this.mainSet for items which are over interval
+	testImmediately = scanOverInterval(this.mainSet, this.maxInterval)
+	  //return one of those if one is found
+	if(testImmediately.length > 0) {
+		return _.sample(testImmediately);
+	}
+	//randomly choose whether to work on the priority set or the main set, taking into account the possibility that one of the sets has no possible interval based candidates
+	mainCandidates = scanOverInterval(this.mainSet, this.minInterval);
+	priorityCandidates = scanOverInterval(this.prioritySet, this.minInterval);
+	chooseMain = _.random(1);
+	if(mainCandidates.length > 0 && chooseMain) {
+		return _.sample(mainCandidates)
+	} else if (priorityCandidates.length > 0) {
+		//TODO change this to a log2 based weighted sampling
+		return _.sample(priorityCandidates)
+	} else {
+		console.log("ERROR (nextItem): no candidate found.  FIXME")
+		return 0;
+	}
+
 }
 
 _updateCorrectTime = function(line, time) {
