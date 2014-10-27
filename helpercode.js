@@ -18,7 +18,7 @@ function saveTexts(updatedTextsArray, updatedTitlesArray) {
   pushArrayToLS(updatedTitlesArray, 'textNames');
   pushArrayToLS(updatedTextsArray, 'textFolderTexts');
 }
-
+var intervals = [0, 10000, 30000, 600000, 6000000];
 function InstanceOfMemorization (title, text, structure, buttonsNotText) {
 
   this.title = title;
@@ -33,12 +33,19 @@ function InstanceOfMemorization (title, text, structure, buttonsNotText) {
   this.maxInterval = 4000;
   this.workingSet = [];
   this.unWorkingSet = [];
+  this.lastTestedTime = [];
+  this.streak = [];
+  this.buckets = [[],[],[],[],[]];
+  var time = Date.now();
   for (var i = text.length -1; i >= 0; i--) {
     this.unWorkingSet.push(i);
     this.prioritySet.push(i);
+    this.lastTestedTime.push(time-this.minInterval);
+    this.streak.push(0);
+    this.buckets[0].push(i);
   };
   this.lastCorrectTime = [];
-  this.lastTestedTime = [];
+
   this.targetTime = [];
   setupIOMFunctions(this);
 
@@ -50,9 +57,25 @@ function setupIOMFunctions (IOM) {
   IOM.nextItem = _nextItem;
   IOM.updateCorrectTime = _updateCorrectTime;
   IOM.reduceTarget = _reduceTarget;
+  IOM.registerWrong = _registerWrong;
+  IOM.registerCorrect = _registerCorrect;
+  IOM.registerResult = _registerResult;
+  if (IOM.mainSet == undefined) {
+  	console.log("updating sets and streak");
+  	this.minInterval = 2000;
+    this.maxInterval = 4000;
+  	IOM.streak = [];
+  	IOM.mainSet = [];
+  	IOM.deferredSet = [];
+  	IOM.prioritySet = [];
+  	for (var i = IOM.text.length - 1; i >= 0; i--) {
+  		IOM.streak.push(0);
+  		IOM.prioritySet.push(i);
+  	};
+  }
 }
 
-_nextItem = function() {
+_nextItemOLD = function() {
   time = Date.now();
   workingPossibilities = [];
   for (var i = 0; i < this.workingSet.length; i++) {
@@ -79,42 +102,130 @@ _nextItem = function() {
   }
 }
 
-scanOverInterval = function(set, interval) {
+scanOverInterval = function(set, times, interval) {
 	returnSet = [];
 	time = Date.now();
 	for (var i = 0; i < set.length; i++) {
-		currentInterval = time - this.lastCorrectTime[set[i]];
+		currentInterval = time - times[set[i]];
 		if(currentInterval >= interval) {
 			returnSet.push(set[i]);
 		}
 	};
-	console.log("scanOverInterval results");
-	console.log(returnSet);
+	//console.log("scanOverInterval results");
+	//console.log(returnSet);
 	return returnSet;
 }
 
-_nextItemNEW = function() {
+_nextItem = function() {
 	time = Date.now();
 	//scan in this.mainSet for items which are over interval
-	testImmediately = scanOverInterval(this.mainSet, this.maxInterval)
+	console.log(this.mainSet);
+	testImmediately = scanOverInterval(this.mainSet, this.lastTestedTime, this.maxInterval)
 	  //return one of those if one is found
 	if(testImmediately.length > 0) {
+		console.log("immediately");
 		return _.sample(testImmediately);
 	}
 	//randomly choose whether to work on the priority set or the main set, taking into account the possibility that one of the sets has no possible interval based candidates
-	mainCandidates = scanOverInterval(this.mainSet, this.minInterval);
-	priorityCandidates = scanOverInterval(this.prioritySet, this.minInterval);
+	mainCandidates = scanOverInterval(this.mainSet, this.lastTestedTime, this.minInterval);
+	priorityCandidates = scanOverInterval(this.prioritySet, this.lastTestedTime, this.minInterval);
 	chooseMain = _.random(1);
 	if(mainCandidates.length > 0 && chooseMain) {
+		console.log("main");
 		return _.sample(mainCandidates)
 	} else if (priorityCandidates.length > 0) {
 		//TODO change this to a log2 based weighted sampling
+    console.log("ERROR: priority only random");
 		return _.sample(priorityCandidates)
 	} else {
-		console.log("ERROR (nextItem): no candidate found.  FIXME")
+		console.log("ERROR (nextItem): no candidate found.  FIXME, maybe ask a stupid question.")
+		alert("Error has been encountered.  Don't worry.  You are doing quite well.  The program may not work correctly.  Try coming back later.")
 		return 0;
 	}
+}
 
+_nextItemNEXT = function() {
+	time = Date.now();
+	for (var i = this.buckets.length - 1; i >= 0; i--) {
+		var candidates = [];
+		for (var j = 0; j < this.buckets[i].length; j++) {
+			if(time - this.lastTestTime[this.buckets[i][j]] > intervals[i]) {
+				candidates.push(this.buckets[i][j]);
+			}
+		};
+		if(candidates.length > 0) {
+			return _.sample(candidates);
+		}
+	};
+	console.log("ERROR: no candidate found.  Impossible!");
+}
+
+
+_registerCorrect = function(line, time) {
+	this.lastTestedTime[line] = time;
+	this.streak[line] += 1;
+	var priotityIndex = _.indexOf(this.prioritySet, line);
+	var mainIndex = _.indexOf(this.mainSet, line);
+	if(priotityIndex != -1) {
+		this.mainSet.push(this.prioritySet.splice(priotityIndex, 1)[0]);
+		if(this.prioritySet.length == 0){
+			alert("FIXME: trigger acceleration event");
+		}
+	} else {
+		if(this.streak[line] > 2) {
+			this.deferredSet.push(this.mainSet.splice(mainIndex,1)[0])
+		}
+	}
+}
+
+_registerResult = function(line, time, correct) {
+	this.lastTestedTime[line] = time;
+
+	for (var i = 0; i < this.buckets.length; i++) {
+		subIndex = _.indexOf(this.buckets[i], line)
+		if(subIndex != -1) {
+			if(correct == "correct"){
+				if(this.streak[line] > 2){
+			    this.buckets[_.min([i+1,this.buckets.length-1])].push(this.buckets[i].splice(subIndex,1)[0]);
+			  	this.streak[line] -= 2;
+			  } else {
+			  	this.streak[line] += 1;
+			  }
+			} else {
+				if(this.streak[line] == 0) {
+			    this.buckets[_.max([i-1,0])].push(this.buckets[i].splice(subIndex,1)[0]);
+			    this.streak[line] += 1; //
+				} else {
+					this.streak[line] -= 1;
+				}
+			}
+			break;
+		}
+	};
+}
+
+_registerWrong = function(line, time) {
+	this.lastTestedTime[line] = time;
+	this.streak[line] = 0;
+	var mainIndex = _.indexOf(this.mainSet, line);
+	if(mainIndex != -1) {
+		console.log("before: main " + this.mainSet + " prioritySet " + this.prioritySet);
+		this.prioritySet.push(this.mainSet.splice(mainIndex, 1)[0]);
+		console.log("after: main " + this.mainSet + " prioritySet " + this.prioritySet);
+	}
+}
+
+_registerWrongNEXT = function(line, time) {
+	this.lastTestedTime[line] = time;
+	this.streak[line] -= 1;
+	for (var i = 0; i < buckets.length; i++) {
+		subIndex = _.indexOf(buckets[i], line)
+		if(subIndex != -1 && this.streak[line] > 2) {
+			//TODO FIXME: make sure that the buckets index is inbounds
+			buckets[i+1].push(buckets[i].splice(subIndex,1)[0])
+			this.streak[line] -= 2;
+		}
+	};
 }
 
 _updateCorrectTime = function(line, time) {

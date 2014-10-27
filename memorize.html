@@ -204,9 +204,11 @@ function punish() {
 function handleResult(correctness, line, time) {
   if (correctness) {
     current.updateCorrectTime(line, time);
+    current.registerResult(line, time, "correct");
     reward();
   } else {
     current.reduceTarget(line);
+    current.registerResult(line, time, "incorrect");
     punish();
   }
   saveMem(current);
@@ -269,6 +271,8 @@ function testPicker() {
       $("#button"+i).hide();
     };
   }
+  //TODO: new method uses intervals for the whole text, instead of individual lines.
+      //: update below to reflect new status.
   var workingcount = current.workingSet.length;
   var noncount = current.unWorkingSet.length;
   $("#complete_percent").html(Math.floor(workingcount/(workingcount+noncount)*100)+"%");
