@@ -136,7 +136,7 @@ samplelog = function(theArray, base) {
 	return theArray[index];
 }
 
-_nextItem = function() {
+_nextItemFORMERNEXT = function() {
 	time = Date.now();
 	//scan in this.mainSet for items which are over interval
 	console.log(this.mainSet);
@@ -164,17 +164,18 @@ _nextItem = function() {
 	}
 }
 
-_nextItemNEXT = function() {
+_nextItem = function() {
 	time = Date.now();
 	for (var i = this.buckets.length - 1; i >= 0; i--) {
 		var candidates = [];
 		for (var j = 0; j < this.buckets[i].length; j++) {
-			if(time - this.lastTestTime[this.buckets[i][j]] > intervals[i]) {
+			if(time - this.lastTestedTime[this.buckets[i][j]] > intervals[i]) {
 				candidates.push(this.buckets[i][j]);
 			}
 		};
 		if(candidates.length > 0) {
-			return _.sample(candidates);
+			console.log("bucket " + i + " had " + candidates.length + " candidates!");
+			return samplelog(candidates,2);
 		}
 	};
 	console.log("ERROR: no candidate found.  Impossible!");
