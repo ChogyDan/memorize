@@ -41,7 +41,7 @@ function InstanceOfMemorization (title, text, structure, buttonsNotText) {
     this.unWorkingSet.push(i);
     this.prioritySet.push(i);
     this.lastTestedTime.push(time-this.minInterval);
-    this.streak.push(0);
+    this.streak.push(3);//starting at 3 allows for a single correct to up interval at start of memorization.  See _registerResult
     this.buckets[0].push(i);
   };
   this.lastCorrectTime = [];
@@ -116,6 +116,26 @@ scanOverInterval = function(set, times, interval) {
 	return returnSet;
 }
 
+samplex = function(theArray, exponent) {
+	//var max = Math.sqrt(theArray.length-1);
+	//var min = 0;
+	randomIndex = Math.round(Math.pow(Math.random()*Math.pow(theArray.length-1,1/exponent),exponent));
+	console.log("length is " + theArray.length + " and random select is " + randomIndex);
+	return theArray[randomIndex];
+}
+
+samplelog = function(theArray, base) {
+	//TODO: this function is wrong.  It is weighting the end where I want to weight the beginning.
+	//Turns out, my input array is reversed.  So for now, it's ok, but I suspect problems will arise.
+	//See here for some possible reference: http://stackoverflow.com/questions/3745760/java-generating-a-random-numbers-with-a-logarithmic-distribution
+	var max = Math.pow(base, theArray.length-1);
+	//var min = 1;
+	var random = Math.random()*(max-1) + 1;
+	var index = Math.round( Math.log(random) / Math.log(base) );
+	console.log("random is " + random + " and length is " + theArray.length + " and random select is " + index);
+	return theArray[index];
+}
+
 _nextItem = function() {
 	time = Date.now();
 	//scan in this.mainSet for items which are over interval
@@ -135,8 +155,8 @@ _nextItem = function() {
 		return _.sample(mainCandidates)
 	} else if (priorityCandidates.length > 0) {
 		//TODO change this to a log2 based weighted sampling
-    console.log("ERROR: priority only random");
-		return _.sample(priorityCandidates)
+    console.log("priority sample");
+		return samplelog(priorityCandidates,2)
 	} else {
 		console.log("ERROR (nextItem): no candidate found.  FIXME, maybe ask a stupid question.")
 		alert("Error has been encountered.  Don't worry.  You are doing quite well.  The program may not work correctly.  Try coming back later.")
@@ -164,10 +184,10 @@ _nextItemNEXT = function() {
 _registerCorrect = function(line, time) {
 	this.lastTestedTime[line] = time;
 	this.streak[line] += 1;
-	var priotityIndex = _.indexOf(this.prioritySet, line);
+	var priorityIndex = _.indexOf(this.prioritySet, line);
 	var mainIndex = _.indexOf(this.mainSet, line);
-	if(priotityIndex != -1) {
-		this.mainSet.push(this.prioritySet.splice(priotityIndex, 1)[0]);
+	if(priorityIndex != -1) {
+		this.mainSet.push(this.prioritySet.splice(priorityIndex, 1)[0]);
 		if(this.prioritySet.length == 0){
 			alert("FIXME: trigger acceleration event");
 		}
@@ -194,9 +214,9 @@ _registerResult = function(line, time, correct) {
 			} else {
 				if(this.streak[line] == 0) {
 			    this.buckets[_.max([i-1,0])].push(this.buckets[i].splice(subIndex,1)[0]);
-			    this.streak[line] += 1; //
+			    this.streak[line] += 1;
 				} else {
-					this.streak[line] -= 1;
+					this.streak[line] = _.max(this.streak[line]-1,0);
 				}
 			}
 			break;
