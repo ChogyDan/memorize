@@ -18,7 +18,7 @@ function saveTexts(updatedTextsArray, updatedTitlesArray) {
   pushArrayToLS(updatedTitlesArray, 'textNames');
   pushArrayToLS(updatedTextsArray, 'textFolderTexts');
 }
-var intervals = [0, 10000, 30000, 600000, 6000000];
+var intervals = [0, 10000, 60000, 600000, 6000000];
 function InstanceOfMemorization (title, text, structure, buttonsNotText) {
 
   this.title = title;
@@ -55,27 +55,14 @@ function InstanceOfMemorization (title, text, structure, buttonsNotText) {
 
 function setupIOMFunctions (IOM) {
   IOM.nextItem = _nextItem;
-  IOM.updateCorrectTime = _updateCorrectTime;
-  IOM.reduceTarget = _reduceTarget;
-  IOM.registerWrong = _registerWrong;
-  IOM.registerCorrect = _registerCorrect;
+  //IOM.updateCorrectTime = _updateCorrectTime;
+  //IOM.reduceTarget = _reduceTarget;
+  //IOM.registerWrong = _registerWrong;
+  //IOM.registerCorrect = _registerCorrect;
   IOM.registerResult = _registerResult;
-  if (IOM.mainSet == undefined) {
-  	console.log("updating sets and streak");
-  	this.minInterval = 2000;
-    this.maxInterval = 4000;
-  	IOM.streak = [];
-  	IOM.mainSet = [];
-  	IOM.deferredSet = [];
-  	IOM.prioritySet = [];
-  	for (var i = IOM.text.length - 1; i >= 0; i--) {
-  		IOM.streak.push(0);
-  		IOM.prioritySet.push(i);
-  	};
-  }
 }
 
-_nextItemOLD = function() {
+/*_nextItemOLD = function() {
   time = Date.now();
   workingPossibilities = [];
   for (var i = 0; i < this.workingSet.length; i++) {
@@ -100,7 +87,7 @@ _nextItemOLD = function() {
   	this.targetTime[newItem] = 0;
   	return newItem;
   }
-}
+}*/
 
 scanOverInterval = function(set, times, interval) {
 	returnSet = [];
@@ -132,11 +119,11 @@ samplelog = function(theArray, base) {
 	//var min = 1;
 	var random = Math.random()*(max-1) + 1;
 	var index = Math.round( Math.log(random) / Math.log(base) );
-	console.log("random is " + random + " and length is " + theArray.length + " and random select is " + index);
+	//console.log("random is " + random + " and length is " + theArray.length + " and random select is " + index);
 	return theArray[index];
 }
 
-_nextItemFORMERNEXT = function() {
+/*_nextItemFORMERNEXT = function() {
 	time = Date.now();
 	//scan in this.mainSet for items which are over interval
 	console.log(this.mainSet);
@@ -162,7 +149,7 @@ _nextItemFORMERNEXT = function() {
 		alert("Error has been encountered.  Don't worry.  You are doing quite well.  The program may not work correctly.  Try coming back later.")
 		return 0;
 	}
-}
+}*/
 
 _nextItem = function() {
 	time = Date.now();
@@ -182,7 +169,7 @@ _nextItem = function() {
 }
 
 
-_registerCorrect = function(line, time) {
+/*_registerCorrect = function(line, time) {
 	this.lastTestedTime[line] = time;
 	this.streak[line] += 1;
 	var priorityIndex = _.indexOf(this.prioritySet, line);
@@ -197,7 +184,7 @@ _registerCorrect = function(line, time) {
 			this.deferredSet.push(this.mainSet.splice(mainIndex,1)[0])
 		}
 	}
-}
+}*/
 
 _registerResult = function(line, time, correct) {
 	this.lastTestedTime[line] = Date.now();
@@ -227,7 +214,7 @@ _registerResult = function(line, time, correct) {
 	};
 }
 
-_registerWrong = function(line, time) {
+/*_registerWrong = function(line, time) {
 	this.lastTestedTime[line] = time;
 	this.streak[line] = 0;
 	var mainIndex = _.indexOf(this.mainSet, line);
@@ -236,9 +223,9 @@ _registerWrong = function(line, time) {
 		this.prioritySet.push(this.mainSet.splice(mainIndex, 1)[0]);
 		console.log("after: main " + this.mainSet + " prioritySet " + this.prioritySet);
 	}
-}
+}*/
 
-_registerWrongNEXT = function(line, time) {
+/*_registerWrongNEXT = function(line, time) {
 	this.lastTestedTime[line] = time;
 	this.streak[line] -= 1;
 	for (var i = 0; i < buckets.length; i++) {
@@ -249,13 +236,13 @@ _registerWrongNEXT = function(line, time) {
 			this.streak[line] -= 2;
 		}
 	};
-}
+}*/
 
-_updateCorrectTime = function(line, time) {
-	/*//TODO this limits target time to an increase of %20 each time you get it correct.  
+/*_updateCorrectTime = function(line, time) {
+	/start//TODO this limits target time to an increase of %20 each time you get it correct.  
 	That addresses just not using the program for a few days, then coming back, gettting it right, 
 	and having a huge increase in target time.  For now, this is ok.  Maybe in the future, base it
-	on something else, like when the program is running?  */
+	on something else, like when the program is running?  star/
 	var potentialNewTarget = time - this.lastTestedTime[line];
 	if (potentialNewTarget < 2*this.targetTime[line] || this.targetTime[line] < 10000) {
 		this.targetTime[line] = potentialNewTarget;
@@ -268,12 +255,12 @@ _updateCorrectTime = function(line, time) {
   this.lastTestedTime[line] = time;
   this.lastWorked = time;
 
-}
+}*/
 
-_reduceTarget = function(line) {
+/*_reduceTarget = function(line) {
   this.targetTime[line] = this.targetTime[line]*0.9;
   this.lastTestedTime[line] = Date.now();
-}
+}*/
 
 function addNewMem(newMem) {
   mems = getMems();
@@ -324,6 +311,6 @@ function randoms_MaxWith(max, toContain) {
 		} while (_.indexOf(randomsArray, possibleRandom) != -1)
 		randomsArray[i] = possibleRandom;
 	};
-	console.log("toContain is " + toContain + " and return array is " + randomsArray);
+	//console.log("toContain is " + toContain + " and return array is " + randomsArray);
 	return [randomsArray, correctLocation];
 }

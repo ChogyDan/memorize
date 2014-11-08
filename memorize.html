@@ -194,11 +194,9 @@ function punish() {
 
 function handleResult(correctness, line, time) {
   if (correctness) {
-    current.updateCorrectTime(line, time);
     current.registerResult(line, time, "correct");
     reward();
   } else {
-    current.reduceTarget(line);
     current.registerResult(line, time, "incorrect");
     punish();
   }
@@ -233,7 +231,6 @@ function testPicker() {
     strategyObject = oddManOut;
     leftContext = 2;
     rightContext = 0;
-    console.log("2 pre context");
   } else if (current.testType == "poem2") {
     strategyObject = oddManOut;
     leftContext = 0;
