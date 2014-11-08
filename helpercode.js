@@ -41,7 +41,7 @@ function InstanceOfMemorization (title, text, structure, buttonsNotText) {
     this.unWorkingSet.push(i);
     this.prioritySet.push(i);
     this.lastTestedTime.push(time-this.minInterval);
-    this.streak.push(3);//starting at 3 allows for a single correct to up interval at start of memorization.  See _registerResult
+    this.streak.push(2);//starting at 3 allows for a single correct to up interval at start of memorization.  See _registerResult
     this.buckets[0].push(i);
   };
   this.lastCorrectTime = [];
@@ -200,24 +200,26 @@ _registerCorrect = function(line, time) {
 }
 
 _registerResult = function(line, time, correct) {
-	this.lastTestedTime[line] = time;
+	this.lastTestedTime[line] = Date.now();
 
 	for (var i = 0; i < this.buckets.length; i++) {
 		subIndex = _.indexOf(this.buckets[i], line)
 		if(subIndex != -1) {
 			if(correct == "correct"){
 				if(this.streak[line] > 2){
-			    this.buckets[_.min([i+1,this.buckets.length-1])].push(this.buckets[i].splice(subIndex,1)[0]);
-			  	this.streak[line] -= 2;
+			    this.buckets[Math.min(i+1,this.buckets.length-1)].push(this.buckets[i].splice(subIndex,1)[0]);
+			  	//this.streak[line] -= 1;
+			  	console.log("upping difficulty");
 			  } else {
 			  	this.streak[line] += 1;
 			  }
 			} else {
 				if(this.streak[line] == 0) {
-			    this.buckets[_.max([i-1,0])].push(this.buckets[i].splice(subIndex,1)[0]);
-			    this.streak[line] += 1;
+			    this.buckets[Math.max(i-1,0)].push(this.buckets[i].splice(subIndex,1)[0]);
+			    //this.streak[line] += 1;
+			    console.log("downing difficulty");
 				} else {
-					this.streak[line] = _.max(this.streak[line]-1,0);
+					this.streak[line] = Math.max(this.streak[line]-2,0);
 				}
 			}
 			break;
@@ -306,4 +308,22 @@ function getRandomFromArray(theArray){
 	var random = _.random(0, theArray.length-1);
 	console.log("random is: " + random);
 	return theArray[random];
+}
+
+function randoms_MaxWith(max, toContain) {
+	var size = 4;
+	var randomsArray = [];
+	var correctLocation = _.random(size-1);
+	randomsArray[correctLocation] = toContain;
+	for (var i = 0; i < size; i++) {
+		if(i == correctLocation) {
+			continue;
+		}
+		do {
+			possibleRandom = _.random(max);
+		} while (_.indexOf(randomsArray, possibleRandom) != -1)
+		randomsArray[i] = possibleRandom;
+	};
+	console.log("toContain is " + toContain + " and return array is " + randomsArray);
+	return [randomsArray, correctLocation];
 }

@@ -40,7 +40,7 @@ var oddManOut = {
     };*/
     var contextStart = newLine - preContext;
     if(contextStart < 0) {
-      postContext -= contextStart;//ensure there is some context if this is close to the beginning
+      //postContext -= contextStart;//ensure there is some context if this is close to the beginning
       contextStart = 0;
     }
     var contextEnd = newLine + postContext + 1;
@@ -52,7 +52,7 @@ var oddManOut = {
       }
       contextEnd = this.text.length;
     }
-    console.log(contextStart + "/" + newLine + "/" + contextEnd);
+    //console.log(contextStart + "/" + newLine + "/" + contextEnd);
     for (var i = contextStart; i < contextEnd; i++) {
       if(i == this.line){
         this.display.push("?????");
@@ -62,16 +62,11 @@ var oddManOut = {
     };
     this.display = this.display.join("\n");    
 
-    this.correctButton = _.random(0,3);
-    for (var i = 0, randomLine; i < 4; i++) {
-      if (i == this.correctButton) {
-        this.buttonNames[i] = this.text[this.line];
-      } else {
-        do { 
-          randomLine = _.random(0,this.text.length-1); 
-        } while(randomLine == this.line); //ie, repeat the randomLine generation if it is equal to this.line, the correct line
-        this.buttonNames[i] = this.text[randomLine];
-      }
+    results = randoms_MaxWith(this.text.length-1, this.line);
+    randoms = results[0];
+    this.correctButton = results[1];
+    for (var i = 0; i < 4; i++) {
+      this.buttonNames[i] = this.text[randoms[i]];
     };
   },
   testedTitle: function() {
@@ -152,16 +147,12 @@ var pairOneBlank = {
     this.display = this.display.join(this.separator);
     console.log("this.display " + this.display);
 
-    this.correctButton = _.random(0,3);
-    for (var i = 0, randomLine; i < 4; i++) {
-      if (i == this.correctButton) {
-        this.buttonNames[i] = this.text[this.line].split(this.separator,2)[this.leftRight];
-      } else {
-        do { 
-          randomLine = _.random(0,this.text.length-1); 
-        } while(randomLine == this.line); //ie, repeat the randomLine generation if it is equal to this.line, the correct line
-        this.buttonNames[i] = this.text[randomLine].split(this.separator,2)[this.leftRight];
-      }
+
+    results = randoms_MaxWith(this.text.length-1, this.line);
+    randoms = results[0];
+    this.correctButton = results[1];
+    for (var i = 0; i < 4; i++) {
+      this.buttonNames[i] = this.text[randoms[i]].split(this.separator,2)[this.leftRight];
     };
   },
   testedTitle: function() {
