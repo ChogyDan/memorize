@@ -18,7 +18,7 @@ function saveTexts(updatedTextsArray, updatedTitlesArray) {
   pushArrayToLS(updatedTitlesArray, 'textNames');
   pushArrayToLS(updatedTextsArray, 'textFolderTexts');
 }
-var intervals = [0, 10000, 60000, 600000, 6000000];
+var intervals = [0, 30000, 600000, 3600000, 3600000*10, 3600000*20, 3600000*40, 3600000*80];
 function InstanceOfMemorization (title, text, structure, buttonsNotText) {
 
   this.title = title;
@@ -26,22 +26,25 @@ function InstanceOfMemorization (title, text, structure, buttonsNotText) {
   this.testType = structure;
   this.buttonsNotText = buttonsNotText;
   this.lastWorked = Date.now();
-  this.prioritySet = [];
-  this.mainSet = [];
-  this.deferredSet = [];
-  this.minInterval = 2000;
-  this.maxInterval = 4000;
-  this.workingSet = [];
-  this.unWorkingSet = [];
+  //this.prioritySet = [];
+  //this.mainSet = [];
+  //this.deferredSet = [];
+  //this.minInterval = 2000;
+  //this.maxInterval = 4000;
+  //this.workingSet = [];
+  //this.unWorkingSet = [];
   this.lastTestedTime = [];
   this.streak = [];
-  this.buckets = [[],[],[],[],[]];
+  this.buckets = [];
+  for (var i = intervals.length - 1; i >= 0; i--) {
+  	this.buckets.push([]);
+  };
   var time = Date.now();
   for (var i = text.length -1; i >= 0; i--) {
-    this.unWorkingSet.push(i);
-    this.prioritySet.push(i);
+    //this.unWorkingSet.push(i);
+    //this.prioritySet.push(i);
     this.lastTestedTime.push(time-this.minInterval);
-    this.streak.push(2);//starting at 3 allows for a single correct to up interval at start of memorization.  See _registerResult
+    this.streak.push(3);//starting at 3 allows for a single correct to up interval at start of memorization.  See _registerResult
     this.buckets[0].push(i);
   };
   this.lastCorrectTime = [];

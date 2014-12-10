@@ -1,0 +1,75 @@
+#! /bin/dash
+# ARGUMENTS:
+# 1 is the command to run
+# 2 is amount of time to sleep till the window will show up
+# 3 is 
+position_program ()
+{
+	$1 &
+	sleep $2
+	window_id=`wmctrl -l | tail -n1 | cut -f1 -d " "`
+	wmctrl -ir $window_id  -e 0,$3
+	if [ ! -z "$4" ]; then
+		wmctrl -ir $window_id -t $4
+	fi
+}
+
+
+
+position_program  "gedit --new-window alpha.*"  1  "39,39,999,222" 0
+# subl --new-window memorize.html start.html texts.html helpercode.js & disown
+# google-chrome --new-window start.html & disown
+# xfce4-terminal --geometry=248x13+3+9823 & disown
+# sleep 3 && subl --new-window *.css & disown
+# bash
+
+exit
+
+I haven't been able to find a consistent way to open programs to a specific spot searching, so I've written a small bash function that uses a combination of wmctrl and sleep to identify and position a window.
+
+This function takes advantage of the fact that the last created window appears last in wmctrl's listings.  Because of the hacky nature of combining wmctrl and sleep to identify windows, I can't address this being used in a startup script.  I doubt it would work.
+
+Here is the function:
+
+    position_program ()
+    {
+    	$1 &
+    	sleep $2
+    	window_id=`wmctrl -l | tail -n1 | cut -f1 -d " "`
+    	wmctrl -ir $window_id  -e 0,$3
+    	if [ ! -z "$4" ]; then
+    		wmctrl -ir $window_id -t $4
+    	fi
+    }
+
+Argument 1 should be the command to execute, in quotes.
+
+Argument 2 is the amount of time to wait.  The script needs to know how long to wait between when a command is run, and when the window actually appears.
+
+Argument 3 is a geometry specification of x,y,height,width.  You can use the command 
+
+    xwininfo | grep geometry
+to help you get proper values for this. (run the command, click on the window with the desired geometry)
+
+Argument 4 is structured to be optional, and added in response to your question.  It takes an integer representing which desktop to move the window to.  The enumeration starts with 0, so your first desktop is 0, 2nd at 1, and so on
+
+Example
+-------
+
+    #! /bin/dash
+    position_program ()
+    {
+    	$1 &
+    	sleep $2
+    	window_id=`wmctrl -l | tail -n1 | cut -f1 -d " "`
+    	wmctrl -ir $window_id  -e 0,$3
+    	if [ ! -z "$4" ]; then
+    		wmctrl -ir $window_id -t $4
+    	fi
+    }
+    
+    # open gedit, position to the upper left corner, sized as 1000x1000
+    position_program  "gedit --new-window my_text.txt" 1 "0,0,1000,1000" 0
+
+    #open another gedit window, same as before but on desktop 2
+    position_program  "gedit --new-window my_othertext.txt" 1 "0,0,1000,1000" 1

@@ -248,9 +248,13 @@ function testPicker() {
     $("#input").hide();
     $("#submit").hide();
     for (var i = 1; i <= 4; i++) {
-      $("#button"+i).show();
-      $("#button"+i).html(strategyObject.button(i));
-
+      var buttonText = strategyObject.button(i);
+      if(buttonText != "") {
+      	$("#button"+i).show();
+        $("#button"+i).html(strategyObject.button(i));
+      } else {
+        $("#button"+i).hide();
+      }
     };
   } else {
     $("#input").show().clear();
@@ -261,7 +265,7 @@ function testPicker() {
   }
   //TODO: new method uses intervals for the whole text, instead of individual lines.
       //: update below to reflect new status.
-  var workingcount = current.workingSet.length;
+  /*var workingcount = current.workingSet.length;
   var noncount = current.unWorkingSet.length;
   $("#complete_percent").html(Math.floor(workingcount/(workingcount+noncount)*100)+"%");
   if(noncount == 0) {
@@ -271,7 +275,7 @@ function testPicker() {
       if(current.targetTime[i] < shortestTime) shortestTime = current.targetTime[i];
     };
     $("#time_score").html((shortestTime/60000).toFixed(2) + " minutes");
-  }
+  }*/
 }
 }//end of strategyObject scope
 
@@ -303,6 +307,11 @@ testPicker();
       <div id="scores">
         <span id="complete_percent">DUMMY PERCENT</span><br />
         <span id="time_score"></span>
+      </div>
+      <div id="controls">
+        <span>starting line </span><select id="line_selector">
+          <option>test</option>
+        </select>
       </div>
     </div>
     <div class="left">
