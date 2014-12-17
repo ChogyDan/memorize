@@ -1,24 +1,34 @@
 .left {
     overflow: hidden;
     min-height: 50px;
-    margin-left: 50px;
+    margin-left: 10px;
     /*border: 2px dashed #f0f*/
 }
 
 .right {
     float: right;
-    width: 250px;
+    width: 200px;
     min-height: 50px;
     
     /*border: 2px dashed #00f*/
 }
 
 #input, button {
-	width: 90%;
+	width: 80%;
 	padding: 1px 10px;
 	margin-top: 4px;
 }
 
+.maybe_button {
+    width: 10%;
+    padding: 1px 10px;
+    margin-top: 4px;
+}
+
 #correctness {
 	height: 30px;
+}
+
+select {
+    width: 50px;
 }
