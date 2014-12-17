@@ -194,10 +194,10 @@ function punish() {
 
 function handleResult(correctness, line, time) {
   if (correctness) {
-    current.registerResult(line, time, "correct");
+    current.registerResult(line, time, 1);
     reward();
   } else {
-    current.registerResult(line, time, "incorrect");
+    current.registerResult(line, time, -1);
     punish();
   }
   saveMem(current);

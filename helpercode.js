@@ -18,7 +18,11 @@ function saveTexts(updatedTextsArray, updatedTitlesArray) {
   pushArrayToLS(updatedTitlesArray, 'textNames');
   pushArrayToLS(updatedTextsArray, 'textFolderTexts');
 }
-var intervals = [0, 30000, 600000, 3600000, 3600000*10, 3600000*20, 3600000*40, 3600000*80];
+var second = 1000;
+var minute = 60*second;
+var hour = 60*minute;
+var day = 24*hour;
+var intervals = [10*second, 30*second, 10*minute, hour, 10*hour, 20*hour, 2*day];
 function InstanceOfMemorization (title, text, structure, buttonsNotText) {
 
   this.title = title;
@@ -26,6 +30,18 @@ function InstanceOfMemorization (title, text, structure, buttonsNotText) {
   this.testType = structure;
   this.buttonsNotText = buttonsNotText;
   this.lastWorked = Date.now();
+  //*** begin strategy rethink
+  this.level = []; //"level" corresponds to the interval that will be used
+  this.timeLastTested = [];
+  this.correctStreak = [];//track how many have been gotten correct in a row
+  this.userSelectedStart = 0;//where the user would like to start memorizing
+  var startingTimeStamp = Date.now() - intervals[0];
+  for (var i = 0; i < this.text.length; i++) {
+    this.level.push(0.0);
+    this.timeLastTested.push(startingTimeStamp);
+    this.correctStreak.push(0);
+  };
+  //*** end
   //this.prioritySet = [];
   //this.mainSet = [];
   //this.deferredSet = [];
@@ -154,7 +170,7 @@ samplelog = function(theArray, base) {
 	}
 }*/
 
-_nextItem = function() {
+_nextItemBUCKETS = function() {
 	time = Date.now();
 	for (var i = this.buckets.length - 1; i >= 0; i--) {
 		var candidates = [];
@@ -170,7 +186,34 @@ _nextItem = function() {
 	};
 	console.log("ERROR: no candidate found.  Impossible!");
 }
-
+_nextItem = function() {
+  time = Date.now();
+  var i = this.userSelectedStart;
+  while(true) {
+    if(intervals[Math.floor(this.level[i])] < time - this.timeLastTested[i]) {
+      return i;
+    }
+    i++;
+    if(i==this.text.length) {
+      i = 0;
+    }
+    if(i == this.userSelectedStart) {
+      break;
+    }
+  };
+  console.log("ERROR: no candidate found.  WHAT TO DO?");
+  return _.random(this.text.length-1);
+}
+_registerResult = function(line, time, score) {
+  this.timeLastTested[line] = time;
+  if(score > 0) {
+    this.correctStreak[line] += 1;
+  } else {
+    this.correctStreak[line] = 0;
+  }
+  this.level[line] += 0.5 + this.correctStreak[line]*0.2;
+  console.log("score/level is " + this.level[line]);
+}
 
 /*_registerCorrect = function(line, time) {
 	this.lastTestedTime[line] = time;
@@ -189,7 +232,7 @@ _nextItem = function() {
 	}
 }*/
 
-_registerResult = function(line, time, correct) {
+_registerResultBUCKETS = function(line, time, correct) {
 	this.lastTestedTime[line] = Date.now();
 
 	for (var i = 0; i < this.buckets.length; i++) {
@@ -216,6 +259,7 @@ _registerResult = function(line, time, correct) {
 		}
 	};
 }
+
 
 /*_registerWrong = function(line, time) {
 	this.lastTestedTime[line] = time;
