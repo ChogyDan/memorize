@@ -28,6 +28,7 @@ var oddManOut = {
       //postContext -= contextStart;//ensure there is some context if this is close to the beginning
       contextStart = 0;
     }
+
     var contextEnd = newLine + postContext + 1;
     if(contextEnd > this.text.length) {
       if(contextStart > contextEnd - this.text.length) {
@@ -252,7 +253,7 @@ function testPicker() {
       $("#button"+i).hide();
     };
   }
-}//testpicker
+}//testPicker
 }//end of strategyObject scope
 
 
@@ -268,14 +269,16 @@ function mainInit() {
 
   //Starting Line:<select>
   $("#line_selector").change(function(){
-    var newStartingPoint = $("#line_selector option:selected").data('line')
+    var newStartingPoint = $("#line_selector option:selected").val();
+    //console.log($("#line_selector option:selected").val());
     current.userSelectedStart = newStartingPoint;
     //console.log(newStartingPoint);
+    testPicker();
   });
-  $("#line_selector option").data('line', -1);
   for (var i = 0; i < current.text.length; i++) {
     $("<option value=\""+i+"\">" + i + (i>9?" ":"&nbsp;&nbsp;&nbsp;") + current.text[i] + "</option>").data('line', i).appendTo("#line_selector");
   };
+  $("#line_selector").val(current.userSelectedStart);
 
   //<checkbox> Test mode
 
@@ -302,9 +305,9 @@ testPicker();
       </div>
       <div id="controls">
         <span>Starting Line: </span><select id="line_selector">
-        <option>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(random lines)</option>
+        <option value="-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(random line)</option>
         </select> <br />
-        <input type="checkbox" name="testmode" disabled="disabled"/><span>Test mode</span>
+        <input type="checkbox" name="testmode" disabled="disabled"/><span><strike>Test mode</strike></span>
         <br /><span id="interval"></span>
         <br /><span>With </span><span id="target_interval"></span><span>s the goal.</span>
       </div>

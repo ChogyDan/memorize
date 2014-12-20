@@ -119,12 +119,12 @@ _readyToTest = function(line) {
 }
 
 _nextItem = function() {
-  var i = this.userSelectedStart;
+  var i = parseInt(this.userSelectedStart);
   if(i == -1) {
     var linesReadyToTest = [];
-    for (var i = 0; i < this.text.length; i++) {
-      if(this.readyToTest(i)) {
-        linesReadyToTest.push(i);
+    for (var j = 0; j < this.text.length; j++) {
+      if(this.readyToTest(j)) {
+        linesReadyToTest.push(j);
       }
     };
     if(linesReadyToTest.length > 0) {
