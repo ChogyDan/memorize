@@ -118,8 +118,16 @@ _readyToTest = function(line) {
   return intervals[Math.floor(this.level[line])] < Date.now() - this.timeLastTested[line];
 }
 
+
 _nextItem = function() {
   var i = parseInt(this.userSelectedStart);
+  /*if(this.testMode) {
+    this.userSelectedStart += 1;
+    if(this.userSelectedStart == this.text.length) {
+      this.userSelectedStart = 0;
+    }
+    return this.userSelectedStart;
+  }*/
   if(i == -1) {
     var linesReadyToTest = [];
     for (var j = 0; j < this.text.length; j++) {
@@ -131,13 +139,16 @@ _nextItem = function() {
       return _.sample(linesReadyToTest);
     }
   }
+  console.log("nextItem before while");
   while(true) {
     if(this.readyToTest(i)) {
       return i;
     }
     i++;
+    console.log(i);
     if(i==this.text.length) {
       i = 0;
+      console.log("wrapping in nextItem");
     }
     if(i == this.userSelectedStart) {
       break;

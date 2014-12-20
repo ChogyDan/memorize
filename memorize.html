@@ -205,6 +205,15 @@ for (var i = 1; i <= 4; i++) {
 function testPicker() {
 	var leftContext;
   var rightContext;
+  var lineToTest = current.nextItem();
+  if($("#test_mode").attr('checked') == 'checked') {
+    current.userSelectedStart += 1;
+    if(current.userSelectedStart == current.text.length) {
+      current.userSelectedStart = 0;
+    }
+    lineToTest = current.userSelectedStart
+  }
+
   if(current.testType == "2poem2") {
     strategyObject = oddManOut;
     leftContext = 2;
@@ -223,15 +232,16 @@ function testPicker() {
   } else{
     console.log("ERROR: unhandled test type");
   };
+  strategyObject.setup(current.title, current.text, lineToTest, leftContext, rightContext);
 
-  var lineToTest = current.nextItem();
+  $("#line_selector").val(current.userSelectedStart);
   if(current.getIntervalOf(lineToTest) == "never") {
     $("#interval").html("Never been tested");
   } else {
     $("#interval").html(current.getIntervalOf(lineToTest) + "s since last test.");
   }
   $("#target_interval").html(current.getTargetIntervalOf(lineToTest));
-  strategyObject.setup(current.title, current.text, lineToTest, leftContext, rightContext);
+
 
   $("#display").html(strategyObject.display.replace(/\n/g,"<br />"));
   if(current.buttonsNotText) {
@@ -278,9 +288,12 @@ function mainInit() {
   for (var i = 0; i < current.text.length; i++) {
     $("<option value=\""+i+"\">" + i + (i>9?" ":"&nbsp;&nbsp;&nbsp;") + current.text[i] + "</option>").data('line', i).appendTo("#line_selector");
   };
-  $("#line_selector").val(current.userSelectedStart);
+
 
   //<checkbox> Test mode
+  $("#test_mode").change(function () {
+    console.log("check change!");
+  });
 
 }
 mainInit();
@@ -307,7 +320,7 @@ testPicker();
         <span>Starting Line: </span><select id="line_selector">
         <option value="-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(random line)</option>
         </select> <br />
-        <input type="checkbox" name="testmode" disabled="disabled"/><span><strike>Test mode</strike></span>
+        <input id="test_mode" type="checkbox" name="testmode"/><span><strike>Test mode</strike></span>
         <br /><span id="interval"></span>
         <br /><span>With </span><span id="target_interval"></span><span>s the goal.</span>
       </div>
