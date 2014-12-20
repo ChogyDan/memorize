@@ -185,11 +185,13 @@ var pairOneBlank = {
 
 
 function reward() {
-  $("#reward").show().delay(1000).slideUp( 300 );
+  $("#reward").hide().delay(300).slideDown( 500 );
+  $("#punish").hide();
 
 }
 function punish() {
-  $("#punish").show().delay(1000).slideUp( 300 );
+  $("#punish").hide().delay(300).slideDown( 500 );
+  $("#reward").hide();
 }
 
 function handleResult(correctness, line, time) {
@@ -241,7 +243,15 @@ function testPicker() {
   } else{
     console.log("ERROR: unhandled test type");
   };
-  strategyObject.setup(current.title, current.text, current.nextItem(), leftContext, rightContext);
+
+  var lineToTest = current.nextItem();
+  if(current.getIntervalOf(lineToTest) == "never") {
+    $("#interval").html("Never been tested");
+  } else {
+    $("#interval").html(current.getIntervalOf(lineToTest) + "s since last test.");
+  }
+  $("#target_interval").html(current.getTargetIntervalOf(lineToTest));
+  strategyObject.setup(current.title, current.text, lineToTest, leftContext, rightContext);
 
   $("#display").html(strategyObject.display.replace(/\n/g,"<br />"));
   if(current.buttonsNotText) {
@@ -263,19 +273,9 @@ function testPicker() {
       $("#button"+i).hide();
     };
   }
-  //TODO: new method uses intervals for the whole text, instead of individual lines.
-      //: update below to reflect new status.
-  /*var workingcount = current.workingSet.length;
-  var noncount = current.unWorkingSet.length;
-  $("#complete_percent").html(Math.floor(workingcount/(workingcount+noncount)*100)+"%");
-  if(noncount == 0) {
-    console.log("noncount");
-    var shortestTime = Date.now();
-    for (var i = current.targetTime.length - 1; i >= 0; i--) {
-      if(current.targetTime[i] < shortestTime) shortestTime = current.targetTime[i];
-    };
-    $("#time_score").html((shortestTime/60000).toFixed(2) + " minutes");
-  }*/
+
+
+
 }
 }//end of strategyObject scope
 
@@ -289,8 +289,29 @@ function mainInit() {
   testTitle = "alphabet";
   memorizationArray = getMems();
   current = memorizationArray[JSON.parse(localStorage['current'])];
+
+  //Starting Line:<select>
+  $("#line_selector").change(function(){
+    var newStartingPoint = $("#line_selector option:selected").data('line')
+    current.userSelectedStart = newStartingPoint;
+    //console.log(newStartingPoint);
+  });
+  $("#line_selector option").data('line', -1);
+  for (var i = 0; i < current.text.length; i++) {
+    $("<option value=\""+i+"\">" + i + (i>9?" ":"&nbsp;&nbsp;&nbsp;") + current.text[i] + "</option>").data('line', i).appendTo("#line_selector");
+  };
+
+  //<checkbox> Test mode
+
+  //<select> intervals
+  for (var i = 0; i < intervals.length; i++) {
+    $("#intervals").append("<option>" + formatInterval(intervals[i]) + "</option>");
+  };
 }
 mainInit();
+
+
+
 testPicker();
 
 
@@ -305,13 +326,15 @@ testPicker();
         <span id="punish" style="display: none;">WRONG</span>
       </div>
       <div id="scores">
-        <span id="complete_percent">DUMMY PERCENT</span><br />
-        <span id="time_score"></span>
+
       </div>
       <div id="controls">
         <span>Starting Line: </span><select id="line_selector">
-          <option>test</option>
-        </select>
+        <option>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(random lines)</option>
+        </select> <br />
+        <input type="checkbox" name="testmode" disabled="disabled"/><span>Test mode</span>
+        <br /><span id="interval"></span>
+        <br /><span>With </span><span id="target_interval"></span><span>s the goal.</span>
       </div>
     </div>
     <div class="left">

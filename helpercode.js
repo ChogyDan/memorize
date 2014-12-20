@@ -23,6 +23,26 @@ var minute = 60*second;
 var hour = 60*minute;
 var day = 24*hour;
 var intervals = [10*second, 30*second, 10*minute, hour, 10*hour, 20*hour, 2*day];
+function formatInterval(ms) {
+  var number = ms/1000;
+  var label = " second";
+  if(number > 60) {
+    number /= 60.0;
+    label = " minute";
+    if(number > 60) {
+      number /= 60.0;
+      label = " hour";     
+      if(number > 24) {
+        number /= 24.0;
+        label = " day";
+      }
+    }
+  }
+  console.log(number.toFixed(1) + label);
+  return number.toFixed(1) + label;
+
+}
+
 function InstanceOfMemorization (title, text, structure, buttonsNotText) {
 
   this.title = title;
@@ -38,7 +58,7 @@ function InstanceOfMemorization (title, text, structure, buttonsNotText) {
   var startingTimeStamp = Date.now() - intervals[0];
   for (var i = 0; i < this.text.length; i++) {
     this.level.push(0.0);
-    this.timeLastTested.push(startingTimeStamp);
+    this.timeLastTested.push(0);
     this.correctStreak.push(0);
   };
   //*** end
@@ -74,11 +94,15 @@ function InstanceOfMemorization (title, text, structure, buttonsNotText) {
 
 function setupIOMFunctions (IOM) {
   IOM.nextItem = _nextItem;
+  IOM.readyToTest = _readyToTest;
   //IOM.updateCorrectTime = _updateCorrectTime;
   //IOM.reduceTarget = _reduceTarget;
   //IOM.registerWrong = _registerWrong;
   //IOM.registerCorrect = _registerCorrect;
   IOM.registerResult = _registerResult;
+  IOM.getIntervalOf = _getIntervalOf;
+  IOM.getTargetIntervalOf = _getTargetIntervalOf;
+
 }
 
 /*_nextItemOLD = function() {
@@ -186,11 +210,29 @@ _nextItemBUCKETS = function() {
 	};
 	console.log("ERROR: no candidate found.  Impossible!");
 }
+
+_readyToTest = function(line) {
+  if(this.timeLastTested[line] == 0) {
+    return true
+  }
+  return intervals[Math.floor(this.level[line])] < Date.now() - this.timeLastTested[line];
+}
+
 _nextItem = function() {
-  time = Date.now();
   var i = this.userSelectedStart;
+  if(i == -1) {
+    var linesReadyToTest = [];
+    for (var i = 0; i < this.text.length; i++) {
+      if(this.readyToTest(i)) {
+        linesReadyToTest.push(i);
+      }
+    };
+    if(linesReadyToTest.length > 0) {
+      return _.sample(linesReadyToTest);
+    }
+  }
   while(true) {
-    if(intervals[Math.floor(this.level[i])] < time - this.timeLastTested[i]) {
+    if(this.readyToTest(i)) {
       return i;
     }
     i++;
@@ -213,6 +255,20 @@ _registerResult = function(line, time, score) {
   }
   this.level[line] += 0.5 + this.correctStreak[line]*0.2;
   console.log("score/level is " + this.level[line]);
+}
+
+_getIntervalOf = function(line) {
+  console.log(Date.now());
+  console.log(this.timeLastTested[line]);
+  console.log(Date.now() - this.timeLastTested[line])
+  if(this.timeLastTested[line] == 0) {
+    return "never";
+  }
+  return formatInterval(Date.now() - this.timeLastTested[line]);
+}
+
+_getTargetIntervalOf = function(line) {
+  return formatInterval( intervals[Math.floor(this.level[line])] );
 }
 
 /*_registerCorrect = function(line, time) {
