@@ -22,22 +22,7 @@ var oddManOut = {
     this.line = newLine;
     this.timeAsked = Date.now();
     this.display=[];
-    /*var context = this.line-_.random(1,2);//for now, context will be of size 4, starting 1 to 2 before the line, except under certain cirumstances which follow
-    if (context>(this.text.length-4)){//if context ends up starting near the end of the text, adjust that
-      context = this.text.length-4;
-    }
-    if (context<0) { //if the text is too small, context will end up negative at this point, and should just point to the beggining.
-      context=0; 
-    }
 
-
-    for (var count = 0; count < 4 && context + count < this.text.length; count++) {
-      if(context+count == this.line) {
-        this.display.push("?????");
-      } else {
-        this.display.push(this.text[context+count]);
-      }
-    };*/
     var contextStart = newLine - preContext;
     if(contextStart < 0) {
       //postContext -= contextStart;//ensure there is some context if this is close to the beginning
@@ -52,7 +37,7 @@ var oddManOut = {
       }
       contextEnd = this.text.length;
     }
-    //console.log(contextStart + "/" + newLine + "/" + contextEnd);
+
     for (var i = contextStart; i < contextEnd; i++) {
       if(i == this.line){
         this.display.push("?????");
@@ -125,13 +110,7 @@ var pairOneBlank = {
     /*function getOther(theLine, separator){
       return theLine.split(separator, 2)[this.leftRight];
     }*/
-    /*TODO:DELETE THISvar context = this.line-_.random(1,2);//for now, context will be of size 4, starting 1 to 2 before the line, except under certain cirumstances which follow
-    if (context>(this.text.length-4)){//if context ends up starting near the end of the text, adjust that
-      context = this.text.length-4;
-    }
-    if (context<0) { //if the text is too small, context will end up negative at this point, and should just point to the beggining.
-      context=0; 
-    }*/
+
     var correctAnswer = "CORRECT ANSWER HERE";
     if(this.leftRight == 0) {
       this.display = "?????;" + this.text[this.line].split(this.separator,2)[1];
@@ -273,10 +252,7 @@ function testPicker() {
       $("#button"+i).hide();
     };
   }
-
-
-
-}
+}//testpicker
 }//end of strategyObject scope
 
 
@@ -303,10 +279,6 @@ function mainInit() {
 
   //<checkbox> Test mode
 
-  //<select> intervals
-  for (var i = 0; i < intervals.length; i++) {
-    $("#intervals").append("<option>" + formatInterval(intervals[i]) + "</option>");
-  };
 }
 mainInit();
 

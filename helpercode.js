@@ -38,7 +38,6 @@ function formatInterval(ms) {
       }
     }
   }
-  console.log(number.toFixed(1) + label);
   return number.toFixed(1) + label;
 
 }
@@ -61,31 +60,7 @@ function InstanceOfMemorization (title, text, structure, buttonsNotText) {
     this.timeLastTested.push(0);
     this.correctStreak.push(0);
   };
-  //*** end
-  //this.prioritySet = [];
-  //this.mainSet = [];
-  //this.deferredSet = [];
-  //this.minInterval = 2000;
-  //this.maxInterval = 4000;
-  //this.workingSet = [];
-  //this.unWorkingSet = [];
-  this.lastTestedTime = [];
-  this.streak = [];
-  this.buckets = [];
-  for (var i = intervals.length - 1; i >= 0; i--) {
-  	this.buckets.push([]);
-  };
-  var time = Date.now();
-  for (var i = text.length -1; i >= 0; i--) {
-    //this.unWorkingSet.push(i);
-    //this.prioritySet.push(i);
-    this.lastTestedTime.push(time-this.minInterval);
-    this.streak.push(3);//starting at 3 allows for a single correct to up interval at start of memorization.  See _registerResult
-    this.buckets[0].push(i);
-  };
-  this.lastCorrectTime = [];
 
-  this.targetTime = [];
   setupIOMFunctions(this);
 
   addNewMem(this);
@@ -95,43 +70,13 @@ function InstanceOfMemorization (title, text, structure, buttonsNotText) {
 function setupIOMFunctions (IOM) {
   IOM.nextItem = _nextItem;
   IOM.readyToTest = _readyToTest;
-  //IOM.updateCorrectTime = _updateCorrectTime;
-  //IOM.reduceTarget = _reduceTarget;
-  //IOM.registerWrong = _registerWrong;
-  //IOM.registerCorrect = _registerCorrect;
   IOM.registerResult = _registerResult;
   IOM.getIntervalOf = _getIntervalOf;
   IOM.getTargetIntervalOf = _getTargetIntervalOf;
 
 }
 
-/*_nextItemOLD = function() {
-  time = Date.now();
-  workingPossibilities = [];
-  for (var i = 0; i < this.workingSet.length; i++) {
-    workingItem = this.workingSet[i];
-    if(time-this.lastCorrectTime[workingItem] > this.targetTime[workingItem]){
-      //console.log(time-this.lastCorrectTime[workingItem] + " > " + this.targetTime[workingItem]);
-      workingPossibilities.push(workingItem);
-    }
-  };
-  console.log(workingPossibilities.length + " is the number of testable lines");
-  if(workingPossibilities.length > 4) {
-  	return getRandomFromArray(workingPossibilities);
-  }
-  newItem = this.unWorkingSet.pop();//TODO make this a bit random
-  if(newItem == null) {//The content of this if is incorrect
-  	alert("You are doing great! You should wait before you continue.");
-  	return getRandomFromArray(this.workingSet);
-  } else {
-    this.workingSet.push(newItem);
-  	this.lastCorrectTime[newItem] = time;
-  	this.lastTestedTime[newItem] = time;
-  	this.targetTime[newItem] = 0;
-  	return newItem;
-  }
-}*/
-
+/* old functional functions that are currently unused
 scanOverInterval = function(set, times, interval) {
 	returnSet = [];
 	time = Date.now();
@@ -164,52 +109,7 @@ samplelog = function(theArray, base) {
 	var index = Math.round( Math.log(random) / Math.log(base) );
 	//console.log("random is " + random + " and length is " + theArray.length + " and random select is " + index);
 	return theArray[index];
-}
-
-/*_nextItemFORMERNEXT = function() {
-	time = Date.now();
-	//scan in this.mainSet for items which are over interval
-	console.log(this.mainSet);
-	testImmediately = scanOverInterval(this.mainSet, this.lastTestedTime, this.maxInterval)
-	  //return one of those if one is found
-	if(testImmediately.length > 0) {
-		console.log("immediately");
-		return _.sample(testImmediately);
-	}
-	//randomly choose whether to work on the priority set or the main set, taking into account the possibility that one of the sets has no possible interval based candidates
-	mainCandidates = scanOverInterval(this.mainSet, this.lastTestedTime, this.minInterval);
-	priorityCandidates = scanOverInterval(this.prioritySet, this.lastTestedTime, this.minInterval);
-	chooseMain = _.random(1);
-	if(mainCandidates.length > 0 && chooseMain) {
-		console.log("main");
-		return _.sample(mainCandidates)
-	} else if (priorityCandidates.length > 0) {
-		//TODO change this to a log2 based weighted sampling
-    console.log("priority sample");
-		return samplelog(priorityCandidates,2)
-	} else {
-		console.log("ERROR (nextItem): no candidate found.  FIXME, maybe ask a stupid question.")
-		alert("Error has been encountered.  Don't worry.  You are doing quite well.  The program may not work correctly.  Try coming back later.")
-		return 0;
-	}
 }*/
-
-_nextItemBUCKETS = function() {
-	time = Date.now();
-	for (var i = this.buckets.length - 1; i >= 0; i--) {
-		var candidates = [];
-		for (var j = 0; j < this.buckets[i].length; j++) {
-			if(time - this.lastTestedTime[this.buckets[i][j]] > intervals[i]) {
-				candidates.push(this.buckets[i][j]);
-			}
-		};
-		if(candidates.length > 0) {
-			console.log("bucket " + i + " had " + candidates.length + " candidates!");
-			return samplelog(candidates,2);
-		}
-	};
-	console.log("ERROR: no candidate found.  Impossible!");
-}
 
 _readyToTest = function(line) {
   if(this.timeLastTested[line] == 0) {
@@ -253,14 +153,11 @@ _registerResult = function(line, time, score) {
   } else {
     this.correctStreak[line] = 0;
   }
-  this.level[line] += 0.5 + this.correctStreak[line]*0.2;
+  this.level[line] += _.max([0.5*score + this.correctStreak[line]*0.2,0]);
   console.log("score/level is " + this.level[line]);
 }
 
 _getIntervalOf = function(line) {
-  console.log(Date.now());
-  console.log(this.timeLastTested[line]);
-  console.log(Date.now() - this.timeLastTested[line])
   if(this.timeLastTested[line] == 0) {
     return "never";
   }
@@ -270,100 +167,6 @@ _getIntervalOf = function(line) {
 _getTargetIntervalOf = function(line) {
   return formatInterval( intervals[Math.floor(this.level[line])] );
 }
-
-/*_registerCorrect = function(line, time) {
-	this.lastTestedTime[line] = time;
-	this.streak[line] += 1;
-	var priorityIndex = _.indexOf(this.prioritySet, line);
-	var mainIndex = _.indexOf(this.mainSet, line);
-	if(priorityIndex != -1) {
-		this.mainSet.push(this.prioritySet.splice(priorityIndex, 1)[0]);
-		if(this.prioritySet.length == 0){
-			alert("FIXME: trigger acceleration event");
-		}
-	} else {
-		if(this.streak[line] > 2) {
-			this.deferredSet.push(this.mainSet.splice(mainIndex,1)[0])
-		}
-	}
-}*/
-
-_registerResultBUCKETS = function(line, time, correct) {
-	this.lastTestedTime[line] = Date.now();
-
-	for (var i = 0; i < this.buckets.length; i++) {
-		subIndex = _.indexOf(this.buckets[i], line)
-		if(subIndex != -1) {
-			if(correct == "correct"){
-				if(this.streak[line] > 2){
-			    this.buckets[Math.min(i+1,this.buckets.length-1)].push(this.buckets[i].splice(subIndex,1)[0]);
-			  	//this.streak[line] -= 1;
-			  	console.log("upping difficulty");
-			  } else {
-			  	this.streak[line] += 1;
-			  }
-			} else {
-				if(this.streak[line] == 0) {
-			    this.buckets[Math.max(i-1,0)].push(this.buckets[i].splice(subIndex,1)[0]);
-			    //this.streak[line] += 1;
-			    console.log("downing difficulty");
-				} else {
-					this.streak[line] = Math.max(this.streak[line]-2,0);
-				}
-			}
-			break;
-		}
-	};
-}
-
-
-/*_registerWrong = function(line, time) {
-	this.lastTestedTime[line] = time;
-	this.streak[line] = 0;
-	var mainIndex = _.indexOf(this.mainSet, line);
-	if(mainIndex != -1) {
-		console.log("before: main " + this.mainSet + " prioritySet " + this.prioritySet);
-		this.prioritySet.push(this.mainSet.splice(mainIndex, 1)[0]);
-		console.log("after: main " + this.mainSet + " prioritySet " + this.prioritySet);
-	}
-}*/
-
-/*_registerWrongNEXT = function(line, time) {
-	this.lastTestedTime[line] = time;
-	this.streak[line] -= 1;
-	for (var i = 0; i < buckets.length; i++) {
-		subIndex = _.indexOf(buckets[i], line)
-		if(subIndex != -1 && this.streak[line] > 2) {
-			//TODO FIXME: make sure that the buckets index is inbounds
-			buckets[i+1].push(buckets[i].splice(subIndex,1)[0])
-			this.streak[line] -= 2;
-		}
-	};
-}*/
-
-/*_updateCorrectTime = function(line, time) {
-	/start//TODO this limits target time to an increase of %20 each time you get it correct.  
-	That addresses just not using the program for a few days, then coming back, gettting it right, 
-	and having a huge increase in target time.  For now, this is ok.  Maybe in the future, base it
-	on something else, like when the program is running?  star/
-	var potentialNewTarget = time - this.lastTestedTime[line];
-	if (potentialNewTarget < 2*this.targetTime[line] || this.targetTime[line] < 10000) {
-		this.targetTime[line] = potentialNewTarget;
-	} else {
-		this.targetTime[line] = 1.5*this.targetTime[line];
-		console.log("time over target! " + this.targetTime[line]);
-		//if (this.targetTime[line]==0) console.log("ERROR: TARGET TIME FAILURE");
-	}
-  this.lastCorrectTime[line] = time;
-  this.lastTestedTime[line] = time;
-  this.lastWorked = time;
-
-}*/
-
-/*_reduceTarget = function(line) {
-  this.targetTime[line] = this.targetTime[line]*0.9;
-  this.lastTestedTime[line] = Date.now();
-}*/
 
 function addNewMem(newMem) {
   mems = getMems();
@@ -392,12 +195,6 @@ function removeMem(index) {
   mems = getMems();
   mems.splice(index, 1);
   saveMems(mems);
-}
-
-function getRandomFromArray(theArray){
-	var random = _.random(0, theArray.length-1);
-	console.log("random is: " + random);
-	return theArray[random];
 }
 
 function randoms_MaxWith(max, toContain) {
