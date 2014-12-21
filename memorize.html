@@ -30,7 +30,7 @@ var oddManOut = {
     }
 
 
-    var contextEnd = newLine + postContext + 1;
+    var contextEnd = 1 + newLine + postContext;
     if(contextEnd > this.text.length) {
       if(contextStart > contextEnd - this.text.length) {
         contextStart -= contextEnd - this.text.length;/*again, ensure some context but at the end. Adjust contextStart instead if preContext because contextStart has been already setup.*/
@@ -184,6 +184,19 @@ function handleResult(correctness, line, time) {
     punish();
   }
   saveMem(current);
+
+  if($("#test_mode").attr('checked') == 'checked') {
+    //increment testModePos
+    testModePos += 1;
+    if(testModePos == current.text.length) {
+      testModePos = 0;
+    }
+
+    //Stop test mode if we reached back to where we started
+    if(testModePos == testModeStart || testModeStart == -1 && testModePos == 0) {
+      $("#test_mode").attr('checked', false).change();
+    } 
+  }
 }
 
 {//strategyObject scope
@@ -197,7 +210,7 @@ for (var i = 1; i <= 4; i++) {
   //console.log(i);//TODO*** here you are
 
   handleResult(strategyObject.checkCorrectButton($(this).data('button')),  strategyObject.line, strategyObject.timeAsked);
-  
+
   testPicker();
 
   }).data('button', i);
@@ -207,16 +220,12 @@ function testPicker() {
 	var leftContext;
   var rightContext;
   var lineToTest;
+
   if($("#test_mode").attr('checked') == 'checked') {
-    current.userSelectedStart += 1;
-    if(current.userSelectedStart == current.text.length) {
-      current.userSelectedStart = 0;
-    }
-    lineToTest = current.userSelectedStart
+    lineToTest = testModePos;
   } else {
     lineToTest = current.nextItem()
   }
-  console.log(typeof lineToTest);
 
   if(current.testType == "2poem2") {
     strategyObject = oddManOut;
@@ -275,11 +284,14 @@ var testText;
 var testTitle;
 var memorizingMetrics;
 var current;
+var testModeStart;
+var testModePos;
 function mainInit() {
   testText = "a\nb\nc\nd\ne\nf".split("\n");
   testTitle = "alphabet";
   memorizationArray = getMems();
   current = memorizationArray[JSON.parse(localStorage['current'])];
+  current.userSelectedStart = -1;
 
   //Starting Line:<select>
   $("#line_selector").change(function(){
@@ -293,19 +305,23 @@ function mainInit() {
     $("<option value=\""+i+"\">" + i + (i>9?" ":"&nbsp;&nbsp;&nbsp;") + current.text[i] + "</option>").appendTo("#line_selector");
   };
 
-
   //<checkbox> Test mode
   $("#test_mode").change(function () {
-    console.log("check change!");
+    if ($("#test_mode").attr('checked') == 'checked') {
+      testModeStart = parseInt($("#line_selector option:selected").val());
+      testModePos = testModeStart;
+      if(testModePos == -1) {
+        testModePos = 0;
+        console.log("working");
+      }
+    }
+    testPicker();
   });
+}//mainInit
 
-}
 mainInit();
 
-
-
 testPicker();
-
 
 });                                    
 </script>                                                               
@@ -324,7 +340,7 @@ testPicker();
         <span>Starting Line: </span><select id="line_selector">
         <option value="-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(random line)</option>
         </select> <br />
-        <input id="test_mode" type="checkbox" name="testmode"/><span><strike>Test mode</strike></span>
+        <input id="test_mode" type="checkbox" name="testmode"/><span>Test mode</span>
         <br /><span id="interval"></span>
         <br /><span>With </span><span id="target_interval"></span><span>s the goal.</span>
       </div>
