@@ -29,6 +29,7 @@ var oddManOut = {
       contextStart = 0;
     }
 
+
     var contextEnd = newLine + postContext + 1;
     if(contextEnd > this.text.length) {
       if(contextStart > contextEnd - this.text.length) {
@@ -205,14 +206,17 @@ for (var i = 1; i <= 4; i++) {
 function testPicker() {
 	var leftContext;
   var rightContext;
-  var lineToTest = current.nextItem();
+  var lineToTest;
   if($("#test_mode").attr('checked') == 'checked') {
     current.userSelectedStart += 1;
     if(current.userSelectedStart == current.text.length) {
       current.userSelectedStart = 0;
     }
     lineToTest = current.userSelectedStart
+  } else {
+    lineToTest = current.nextItem()
   }
+  console.log(typeof lineToTest);
 
   if(current.testType == "2poem2") {
     strategyObject = oddManOut;
@@ -279,14 +283,14 @@ function mainInit() {
 
   //Starting Line:<select>
   $("#line_selector").change(function(){
-    var newStartingPoint = $("#line_selector option:selected").val();
+    var newStartingPoint = parseInt($("#line_selector option:selected").val());
     //console.log($("#line_selector option:selected").val());
     current.userSelectedStart = newStartingPoint;
     //console.log(newStartingPoint);
     testPicker();
   });
   for (var i = 0; i < current.text.length; i++) {
-    $("<option value=\""+i+"\">" + i + (i>9?" ":"&nbsp;&nbsp;&nbsp;") + current.text[i] + "</option>").data('line', i).appendTo("#line_selector");
+    $("<option value=\""+i+"\">" + i + (i>9?" ":"&nbsp;&nbsp;&nbsp;") + current.text[i] + "</option>").appendTo("#line_selector");
   };
 
 
