@@ -11,7 +11,7 @@ position_program ()
 	echo "\"$1\" has been placed"
 }
 
-position_program  "gedit --new-window alpha.*"  2  "779,790,819,357" 0
+position_program  "gedit --new-window alpha.*"  5  "779,790,819,357" 0
 position_program "subl --new-window memorize.html start.html texts.html helpercode.js" 3 "718,0,875,864"
 position_program "google-chrome --new-window start.html" 3 "0,0,732,710"
 position_program lxterminal 2 "0,917,1153,230" 

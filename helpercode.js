@@ -49,6 +49,8 @@ function InstanceOfMemorization (title, text, structure, buttonsNotText) {
   this.testType = structure;
   this.buttonsNotText = buttonsNotText;
   this.lastWorked = Date.now();
+  this.internalTime = 0;
+  this.internalTimeTested = [];
   //*** begin strategy rethink
   this.level = []; //"level" corresponds to the interval that will be used
   this.timeLastTested = [];
@@ -59,6 +61,7 @@ function InstanceOfMemorization (title, text, structure, buttonsNotText) {
     this.level.push(0.0);
     this.timeLastTested.push(0);
     this.correctStreak.push(0);
+    this.internalTimeTested.push(-1);
   };
 
   setupIOMFunctions(this);
@@ -214,4 +217,17 @@ function randoms_MaxWith(max, toContain) {
 	};
 	//console.log("toContain is " + toContain + " and return array is " + randomsArray);
 	return [randomsArray, correctLocation];
+}
+
+//SCORING
+function scoreInternalTimeInterval(desiredInterval, currentTime, lastTestTime) {
+
+}
+
+function scoreTimeInterval(desiredInterval, currentTime, lastTestTime) {
+
+}
+
+function scoreProximity(location, locationTestHistory){
+  
 }
