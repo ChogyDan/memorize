@@ -32,17 +32,11 @@ var textFolderTexts = pullArrayFromLS('textFolderTexts');
 var flagNewTextCurrentlyBeingEdited = true;
 var newTextSave = "";
 var textIndex;
-resetToNewText();
+document.getElementById("input").disabled=true;
 
 function addTitleToPage(usTextName) {
   $("select").append("<option>"+usTextName+"</option>");
-}
-
-function resetToNewText () {
-  $("#input").val(newTextSave);
-  flagNewTextCurrentlyBeingEdited = true;
-  $("select").val("(new text)");
-  $("#input").keyup();
+  document.getElementById("input").disabled=false;
 }
 
 var saveScheduled = false;
@@ -111,7 +105,9 @@ $("#delete").click(function () {
   textNames.splice(indexToDelete, 1);
   $("option:selected").remove();
   save();
-  resetToNewText();
+  if(textNames.length == 0) { //using textNames as an indicator for emptiness of the rest
+  	document.getElementById("input").disabled=true;
+  }
 });
 
 $("#back").click(function () {
