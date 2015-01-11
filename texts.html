@@ -91,13 +91,15 @@ _.each(textNames, function(name, index, textFolder) {
 });
 
 $("select").change(function() {
-	save();
   titleOfTextToSwitchTo = $(this).val();
   textIndex = _.indexOf(textNames, titleOfTextToSwitchTo);
   $("#input").val(textFolderTexts[textIndex]);
   $("#input").keyup();
 });
 $("select").change();
+$("select").click(function() {
+	save();
+});
 
 $("#delete").click(function () {
   titleToDelete = getSelectedTitle();
@@ -105,7 +107,8 @@ $("#delete").click(function () {
   textFolderTexts.splice(indexToDelete, 1);
   textNames.splice(indexToDelete, 1);
   $("option:selected").remove();
-  save();
+  $("select").change();
+    save();
   if(textNames.length == 0) { //using textNames as an indicator for emptiness of the rest
   	document.getElementById("input").disabled=true;
   }

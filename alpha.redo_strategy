@@ -1,10 +1,4 @@
-Rethink strategy
-Really need to rethink user needs
-DONE! - start at a certain spot
-- decide whether to practice a part more and less
-- decide intervals?
-- decide how quickly the intervals are increased?
-- mark a question that was gotten correct for more practice
+
 -- maybe decide how confident one is in an answer?
 
 LET THE USER COMMUNICATE WITH THE APP!!!
@@ -15,3 +9,15 @@ LET THE USER COMMUNICATE WITH THE APP!!!
 - specify answers that you tend to confuse
 
 AND of course, track the current interval, auto increase the intervals, this stuff has been done.
+
+- formulate an internal timing structure, with 1 question attempt as one tick, or maybe each question as one tick (I think second)
+- -just have an option, or maybe a switch? between earth times and app times.
+- - have the feedback area be switchable as well
+
+
+- set up a more general form, in the style of machine learning
+function(various inputs like current interval in both real time and internal, desired interval testings, any other data communicated) {
+  do
+  stuff
+  return theNextItemToTest;
+}
