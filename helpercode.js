@@ -26,13 +26,13 @@ var intervals = [10*second, 30*second, 10*minute, hour, 10*hour, 20*hour, 2*day]
 function formatInterval(ms) {
   var number = ms/1000;
   var label = " second";
-  if(number > 60) {
+  if(number > 120) {
     number /= 60.0;
     label = " minute";
-    if(number > 60) {
+    if(number > 120) {
       number /= 60.0;
       label = " hour";     
-      if(number > 24) {
+      if(number > 48) {
         number /= 24.0;
         label = " day";
       }
@@ -51,17 +51,19 @@ function InstanceOfMemorization (title, text, structure, buttonsNotText) {
   this.lastWorked = Date.now();
   this.internalTime = 0;
   this.internalTimeTested = [];
+  this.internalTimeInterval = [];
   //*** begin strategy rethink
   this.level = []; //"level" corresponds to the interval that will be used
   this.timeLastTested = [];
-  this.correctStreak = [];//track how many have been gotten correct in a row
+  this.repeat = [];
   this.userSelectedStart = 0;//where the user would like to start memorizing
   var startingTimeStamp = Date.now() - intervals[0];
   for (var i = 0; i < this.text.length; i++) {
     this.level.push(0.0);
     this.timeLastTested.push(0);
-    this.correctStreak.push(0);
-    this.internalTimeTested.push(-1);
+    this.internalTimeTested.push(-1); //-1 is treated as never asked
+    this.internalTimeInterval.push(1); //an interval of 1 means an adjecent question, so kinda like zero
+    this.repeat.push(0);
   };
 
   setupIOMFunctions(this);
@@ -124,21 +126,66 @@ _readyToTest = function(line) {
 
 _nextItem = function() {
   var i = parseInt(this.userSelectedStart);
-  if(i == -1) {
-    var linesReadyToTest = [];
-    for (var j = 0; j < this.text.length; j++) {
-      if(this.readyToTest(j)) {
-        linesReadyToTest.push(j);
+  if(i==-1){
+    var newInternalVariance, newVariance;
+    var time, bi, internal, none, bi = 0, time = 1, internal = 2, none = 3;
+    var index, timeVar, internalVar, index = 0, timeVar=1, internalVar=2;
+    var results = [[-1,0,1],[-1,0,1],[-1,0,1],[-1,0,1]];
+
+    for (var g = 0; g < this.text.length; g++) {
+      newInternalVariance = this.internalTime - this.internalTimeTested[g] - this.internalTimeInterval[g];
+      newVariance = Date.now() - this.timeLastTested[g] - this.getTargetIntervalOf(g); 
+      if(newVariance > 0 && newInternalVariance > 1){ //this means 'g' is ready to be tested from an external
+                                                      // time and internal time perspective.
+        if(newInternalVariance < results[bi][internalVar] || results[bi][index] == -1){
+          results[bi][index] = biCandidate = g;
+          results[bi][timeVar] = biVariance = newVariance;
+          results[bi][internalVar] = biInternalVariance = newInternalVariance;
+        }
       }
+      if(newVariance > 0 ) {
+        if(newInternalVariance > results[time][internalVar] || results[time][index] == -1){
+          results[time][index] =  g;
+          results[time][timeVar] =  newVariance;
+          results[time][internalVar] =  newInternalVariance;
+        }
+      }
+      if(newInternalVariance > 1) {
+        if(newInternalVariance < results[internal][internalVar] || results[internal][index] == -1){
+          results[internal][index] =  g;
+          results[internal][timeVar] =  newVariance;
+          results[internal][internalVar] =  newInternalVariance;
+        }
+      }
+      if(true) {
+        if(newInternalVariance > results[none][internalVar] || results[none][index] == -1){
+          results[none][index] =  g;
+          results[none][timeVar] =  newVariance;
+          results[none][internalVar] =  newInternalVariance;
+        }
+      }
+      
     };
-    if(linesReadyToTest.length > 0) {
-      return _.sample(linesReadyToTest);
+    console.log(results);
+    if(results[bi][index] != -1){
+      console.log("bicandidate found! " + results[bi]);
+      return results[bi][index];
+    } else if (results[time][index] != -1) {
+      console.log("time candidate found! " + results[time]);
+      return results[time][index];
+    } else if (results[internal][index] != -1) {
+      console.log("internal candidate found! " + results[internal]);
+      return results[internal][index] ;
+    } else {
+      console.log("none found! " + results[none]);
+      return results[none][index] ;
     }
   }
   while(true) {
     if(this.readyToTest(i)) {
       return i;
     }
+
     i++;
     if(i==this.text.length) {
       i = 0;
@@ -150,26 +197,36 @@ _nextItem = function() {
   console.log("ERROR: no candidate found.  WHAT TO DO?");
   return _.random(this.text.length-1);
 }
+
 _registerResult = function(line, time, score) {
+  var timeIntervalBeaten = this.getIntervalOf(line) > this.getTargetIntervalOf(line);
+  var internalTimeIntervalBeaten = this.internalTimeInterval[line] > this.internalTime - this.internalTimeTested[line];
   this.timeLastTested[line] = time;
+  this.internalTimeTested[line] = this.internalTime;
+  this.internalTime += 1;
   if(score > 0) {
-    this.correctStreak[line] += 1;
+    if(this.repeat[line] <= 0) {
+      this.level[line] += 1;
+      if(internalTimeIntervalBeaten) {
+        this.internalTimeInterval[line] += 1;
+      }
+    } else {
+      this.repeat[line] -= 1;
+    }
   } else {
-    this.correctStreak[line] = 0;
-  }
-  this.level[line] += _.max([0.5*score + this.correctStreak[line]*0.2,0]);
-  console.log("score/level is " + this.level[line]);
+    this.repeat[line] += 1; //TODO increase this based on scoring? probably should.
+  }  
 }
 
 _getIntervalOf = function(line) {
   if(this.timeLastTested[line] == 0) {
     return "never";
   }
-  return formatInterval(Date.now() - this.timeLastTested[line]);
+  return Date.now() - this.timeLastTested[line];
 }
 
 _getTargetIntervalOf = function(line) {
-  return formatInterval( intervals[Math.floor(this.level[line])] );
+  return intervals[Math.floor(this.level[line])];
 }
 
 function addNewMem(newMem) {

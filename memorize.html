@@ -185,18 +185,7 @@ function handleResult(correctness, line, time) {
   }
   saveMem(current);
 
-  if($("#test_mode").attr('checked') == 'checked') {
-    //increment testModePos
-    testModePos += 1;
-    if(testModePos == current.text.length) {
-      testModePos = 0;
-    }
 
-    //Stop test mode if we reached back to where we started
-    if(testModePos == testModeStart || testModeStart == -1 && testModePos == 0) {
-      $("#test_mode").attr('checked', false).change();
-    } 
-  }
 }
 
 {//strategyObject scope
@@ -207,11 +196,31 @@ var strategyObject;
 });*///TODO this is code for typed responses rather than multiple choice
 for (var i = 1; i <= 4; i++) {
   $("#button"+i).click(function (e) {
-  //console.log(i);//TODO*** here you are
+    var buttonclicked = $(this).data('button');
+    var correctness = strategyObject.checkCorrectButton(buttonclicked);
 
-  handleResult(strategyObject.checkCorrectButton($(this).data('button')),  strategyObject.line, strategyObject.timeAsked);
+    handleResult(correctness,  strategyObject.line, strategyObject.timeAsked);
 
-  testPicker();
+    if(correctness){
+      if($("#test_mode").attr('checked') == 'checked') {
+        //increment testModePos
+        testModePos += 1;
+        if(testModePos == current.text.length) {
+          testModePos = 0;
+        }
+
+        //Stop test mode if we reached back to where we started
+        if(testModePos == testModeStart || testModeStart == -1 && testModePos == 0) {
+          $("#test_mode").attr('checked', false).change();
+        } 
+      }
+
+      testPicker();
+    } else {
+      $(this).html("");
+    }
+
+
 
   }).data('button', i);
 
@@ -241,7 +250,7 @@ function testPicker() {
     rightContext = 2;    
   } else if (current.testType == "vocab") {
     strategyObject = pairOneBlank;
-    leftContext = 0;
+    leftContext = 1;
   } else{
     console.log("ERROR: unhandled test type");
   };
@@ -251,9 +260,9 @@ function testPicker() {
   if(current.getIntervalOf(lineToTest) == "never") {
     $("#interval").html("Never been tested");
   } else {
-    $("#interval").html(current.getIntervalOf(lineToTest) + "s since last test.");
+    $("#interval").html(formatInterval(current.getIntervalOf(lineToTest)) + "s since last test.");
   }
-  $("#target_interval").html(current.getTargetIntervalOf(lineToTest));
+  $("#target_interval").html(formatInterval(current.getTargetIntervalOf(lineToTest)));
 
 
   $("#display").html(strategyObject.display.replace(/\n/g,"<br />"));
@@ -349,10 +358,10 @@ testPicker();
       <div id="display">test stuff</div>
       <textarea id="input"></textarea><br />
       <div id="buttons">
-        <button id="button1" /></button><button hidden id="maybe1" class="maybe_button" />maybe...</button><br />
-        <button id="button2" /></button><button hidden id="maybe2" class="maybe_button" />maybe...</button><br />
-        <button id="button3" /></button><button hidden id="maybe3" class="maybe_button" />maybe...</button><br />
-        <button id="button4" /></button><button hidden id="maybe4" class="maybe_button" />maybe...</button><br />
+        <button id="button1" /></button><button  id="maybe1" class="maybe_button" />maybe...</button><br />
+        <button id="button2" /></button><button  id="maybe2" class="maybe_button" />maybe...</button><br />
+        <button id="button3" /></button><button  id="maybe3" class="maybe_button" />maybe...</button><br />
+        <button id="button4" /></button><button  id="maybe4" class="maybe_button" />maybe...</button><br />
       </div>
       <button id="submit">Submit</button>
     </div>

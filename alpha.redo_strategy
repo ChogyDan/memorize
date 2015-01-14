@@ -1,4 +1,5 @@
 
+
 -- maybe decide how confident one is in an answer?
 
 LET THE USER COMMUNICATE WITH THE APP!!!
@@ -17,7 +18,9 @@ AND of course, track the current interval, auto increase the intervals, this stu
 
 - set up a more general form, in the style of machine learning
 function(various inputs like current interval in both real time and internal, desired interval testings, any other data communicated) {
-  do
-  stuff
+  score each object
+  sort by scoring, and select the highest score for testing
   return theNextItemToTest;
 }
+
+- make 2 options for vocab lists, testing against one or the other side of the pair
