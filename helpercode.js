@@ -135,7 +135,9 @@ _nextItem = function() {
     for (var g = 0; g < this.text.length; g++) {
       newInternalVariance = this.internalTime - this.internalTimeTested[g] - this.internalTimeInterval[g];
       newVariance = Date.now() - this.timeLastTested[g] - this.getTargetIntervalOf(g); 
-      if(newVariance > 0 && newInternalVariance > 1){ //this means 'g' is ready to be tested from an external
+      console.log("this.internalTime: "+this.internalTime + " this.internalTimeTested: " + this.internalTimeTested[g]);
+      console.log("#" + g + " time var: " + newVariance + " internal var: " + newInternalVariance + " absolute internal: " + this.internalTimeInterval[g]);
+      if(newVariance >= 0 && newInternalVariance >= 0){ //this means 'g' is ready to be tested from an external
                                                       // time and internal time perspective.
         if(newInternalVariance < results[bi][internalVar] || results[bi][index] == -1){
           results[bi][index] = biCandidate = g;
@@ -143,14 +145,14 @@ _nextItem = function() {
           results[bi][internalVar] = biInternalVariance = newInternalVariance;
         }
       }
-      if(newVariance > 0 ) {
+      if(newVariance >= 0 && newInternalVariance < 0) {
         if(newInternalVariance > results[time][internalVar] || results[time][index] == -1){
           results[time][index] =  g;
           results[time][timeVar] =  newVariance;
           results[time][internalVar] =  newInternalVariance;
         }
       }
-      if(newInternalVariance > 1) {
+      if(newInternalVariance >= 0 && newVariance < 0) {
         if(newInternalVariance < results[internal][internalVar] || results[internal][index] == -1){
           results[internal][index] =  g;
           results[internal][timeVar] =  newVariance;
@@ -200,12 +202,13 @@ _nextItem = function() {
 
 _registerResult = function(line, time, score) {
   var timeIntervalBeaten = this.getIntervalOf(line) > this.getTargetIntervalOf(line);
-  var internalTimeIntervalBeaten = this.internalTimeInterval[line] > this.internalTime - this.internalTimeTested[line];
+  var internalTimeIntervalBeaten = this.internalTimeInterval[line] <= this.internalTime - this.internalTimeTested[line];
   this.timeLastTested[line] = time;
   this.internalTimeTested[line] = this.internalTime;
   this.internalTime += 1;
   if(score > 0) {
-    if(this.repeat[line] <= 0) {
+    console.log("repeats " + this.repeat[line]);
+    if(this.repeat[line] == 0) {
       this.level[line] += 1;
       if(internalTimeIntervalBeaten) {
         this.internalTimeInterval[line] += 1;

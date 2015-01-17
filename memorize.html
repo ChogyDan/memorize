@@ -122,11 +122,11 @@ var pairOneBlank = {
 
     this.display=[];
     this.display[(this.leftRight+1)%2] = this.text[this.line].split(this.separator,2)[(this.leftRight+1)%2];
-    console.log("this.display[this.leftRight] " + this.display[this.leftRight]);
+    //console.log("this.display[this.leftRight] " + this.display[this.leftRight]);
     this.display[this.leftRight] = "?????";
 
     this.display = this.display.join(this.separator);
-    console.log("this.display " + this.display);
+    //console.log("this.display " + this.display);
 
 
     results = randoms_MaxWith(this.text.length-1, this.line);
