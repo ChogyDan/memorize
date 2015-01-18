@@ -124,15 +124,15 @@ _readyToTest = function(line) {
 }
 
 
-_nextItem = function() {
-  var i = parseInt(this.userSelectedStart);
-  if(i==-1){
+_nextItem = function(start, end) {
+  if(start == end) return start; //needed so below logic doesn't have to handle this situation
     var newInternalVariance, newVariance;
     var time, bi, internal, none, bi = 0, time = 1, internal = 2, none = 3;
     var index, timeVar, internalVar, index = 0, timeVar=1, internalVar=2;
     var results = [[-1,0,1],[-1,0,1],[-1,0,1],[-1,0,1]];
 
-    for (var g = 0; g < this.text.length; g++) {
+    for (var g = start; g < end+1; g++) {
+      console.log(g);
       newInternalVariance = this.internalTime - this.internalTimeTested[g] - this.internalTimeInterval[g];
       newVariance = Date.now() - this.timeLastTested[g] - this.getTargetIntervalOf(g); 
       //console.log("this.internalTime: "+this.internalTime + " this.internalTimeTested: " + this.internalTimeTested[g]);
@@ -182,22 +182,6 @@ _nextItem = function() {
       console.log("none found! " + results[none]);
       return results[none][index] ;
     }
-  }
-  while(true) {
-    if(this.readyToTest(i)) {
-      return i;
-    }
-
-    i++;
-    if(i==this.text.length) {
-      i = 0;
-    }
-    if(i == this.userSelectedStart) {
-      break;
-    }
-  };
-  console.log("ERROR: no candidate found.  WHAT TO DO?");
-  return _.random(this.text.length-1);
 }
 
 _registerResult = function(line, time, score) {

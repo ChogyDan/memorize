@@ -229,11 +229,14 @@ function testPicker() {
 	var leftContext;
   var rightContext;
   var lineToTest;
+  var selectedStart, selectedEnd;
+  selectedStart = parseInt($("#line_selector option:selected").val());
+  selectedEnd = parseInt($("#end_selector option:selected").val());
 
   if($("#test_mode").attr('checked') == 'checked') {
     lineToTest = testModePos;
   } else {
-    lineToTest = current.nextItem()
+    lineToTest = current.nextItem(selectedStart, selectedEnd);
   }
 
   if(current.testType == "2poem2") {
