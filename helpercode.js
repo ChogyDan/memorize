@@ -126,62 +126,62 @@ _readyToTest = function(line) {
 
 _nextItem = function(start, end) {
   if(start == end) return start; //needed so below logic doesn't have to handle this situation
-    var newInternalVariance, newVariance;
-    var time, bi, internal, none, bi = 0, time = 1, internal = 2, none = 3;
-    var index, timeVar, internalVar, index = 0, timeVar=1, internalVar=2;
-    var results = [[-1,0,1],[-1,0,1],[-1,0,1],[-1,0,1]];
+  var newInternalVariance, newVariance;
+  var time, bi, internal, none, bi = 0, time = 1, internal = 2, none = 3;
+  var index, timeVar, internalVar, index = 0, timeVar=1, internalVar=2;
+  var results = [[-1,0,1],[-1,0,1],[-1,0,1],[-1,0,1]];
 
-    for (var g = start; g < end+1; g++) {
-      console.log(g);
-      newInternalVariance = this.internalTime - this.internalTimeTested[g] - this.internalTimeInterval[g];
-      newVariance = Date.now() - this.timeLastTested[g] - this.getTargetIntervalOf(g); 
-      //console.log("this.internalTime: "+this.internalTime + " this.internalTimeTested: " + this.internalTimeTested[g]);
-      //console.log("#" + g + " time var: " + newVariance + " internal var: " + newInternalVariance + " absolute internal: " + this.internalTimeInterval[g]);
-      if(newVariance >= 0 && newInternalVariance >= 0){ //this means 'g' is ready to be tested from an external
-                                                      // time and internal time perspective.
-        if(newInternalVariance < results[bi][internalVar] || results[bi][index] == -1){
-          results[bi][index] = biCandidate = g;
-          results[bi][timeVar] = biVariance = newVariance;
-          results[bi][internalVar] = biInternalVariance = newInternalVariance;
-        }
+  for (var g = start; g < end+1; g++) {
+    console.log(g);
+    newInternalVariance = this.internalTime - this.internalTimeTested[g] - this.internalTimeInterval[g];
+    newVariance = Date.now() - this.timeLastTested[g] - this.getTargetIntervalOf(g); 
+    //console.log("this.internalTime: "+this.internalTime + " this.internalTimeTested: " + this.internalTimeTested[g]);
+    //console.log("#" + g + " time var: " + newVariance + " internal var: " + newInternalVariance + " absolute internal: " + this.internalTimeInterval[g]);
+    if(newVariance >= 0 && newInternalVariance >= 0){ //this means 'g' is ready to be tested from an external
+                                                    // time and internal time perspective.
+      if(newInternalVariance < results[bi][internalVar] || results[bi][index] == -1){
+        results[bi][index] = biCandidate = g;
+        results[bi][timeVar] = biVariance = newVariance;
+        results[bi][internalVar] = biInternalVariance = newInternalVariance;
       }
-      if(newVariance >= 0 && newInternalVariance < 0) {
-        if(newInternalVariance > results[time][internalVar] || results[time][index] == -1){
-          results[time][index] =  g;
-          results[time][timeVar] =  newVariance;
-          results[time][internalVar] =  newInternalVariance;
-        }
-      }
-      if(newInternalVariance >= 0 && newVariance < 0) {
-        if(newInternalVariance < results[internal][internalVar] || results[internal][index] == -1){
-          results[internal][index] =  g;
-          results[internal][timeVar] =  newVariance;
-          results[internal][internalVar] =  newInternalVariance;
-        }
-      }
-      if(true) {
-        if(newInternalVariance > results[none][internalVar] || results[none][index] == -1){
-          results[none][index] =  g;
-          results[none][timeVar] =  newVariance;
-          results[none][internalVar] =  newInternalVariance;
-        }
-      }
-      
-    };
-    console.log(results);
-    if(results[bi][index] != -1){
-      console.log("bicandidate found! " + results[bi]);
-      return results[bi][index];
-    } else if (results[time][index] != -1) {
-      console.log("time candidate found! " + results[time]);
-      return results[time][index];
-    } else if (results[internal][index] != -1) {
-      console.log("internal candidate found! " + results[internal]);
-      return results[internal][index] ;
-    } else {
-      console.log("none found! " + results[none]);
-      return results[none][index] ;
     }
+    if(newVariance >= 0 && newInternalVariance < 0) {
+      if(newInternalVariance > results[time][internalVar] || results[time][index] == -1){
+        results[time][index] =  g;
+        results[time][timeVar] =  newVariance;
+        results[time][internalVar] =  newInternalVariance;
+      }
+    }
+    if(newInternalVariance >= 0 && newVariance < 0) {
+      if(newInternalVariance < results[internal][internalVar] || results[internal][index] == -1){
+        results[internal][index] =  g;
+        results[internal][timeVar] =  newVariance;
+        results[internal][internalVar] =  newInternalVariance;
+      }
+    }
+    if(true) {
+      if(newInternalVariance > results[none][internalVar] || results[none][index] == -1){
+        results[none][index] =  g;
+        results[none][timeVar] =  newVariance;
+        results[none][internalVar] =  newInternalVariance;
+      }
+    }
+    
+  };
+  console.log(results);
+  if(results[bi][index] != -1){
+    console.log("bicandidate found! " + results[bi]);
+    return results[bi][index];
+  } else if (results[time][index] != -1) {
+    console.log("time candidate found! " + results[time]);
+    return results[time][index];
+  } else if (results[internal][index] != -1) {
+    console.log("internal candidate found! " + results[internal]);
+    return results[internal][index] ;
+  } else {
+    console.log("none found! " + results[none]);
+    return results[none][index] ;
+  }
 }
 
 _registerResult = function(line, time, score) {
