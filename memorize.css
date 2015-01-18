@@ -29,6 +29,7 @@
 	height: 30px;
 }
 
-#line_selector {
+.line_selector {
     width: 40px;
 }
+

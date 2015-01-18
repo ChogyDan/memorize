@@ -288,7 +288,9 @@ function testPicker() {
 }//testPicker
 }//end of strategyObject scope
 
-
+function helper_addOption(value, lineText, elementID){
+  $("<option value=\""+value+"\">" + value + (value>9?" ":"&nbsp;&nbsp;&nbsp;") + lineText + "</option>").appendTo("#"+elementID);
+}
 var testText;
 var testTitle;
 var memorizingMetrics;
@@ -302,17 +304,34 @@ function mainInit() {
   current = memorizationArray[JSON.parse(localStorage['current'])];
   current.userSelectedStart = -1;
 
+  function endSelectInit(startingPoint) {
+    var currentOption = parseInt($("#end_selector option:selected").val());
+    if( currentOption < startingPoint ) currentOption = startingPoint; 
+    console.log("endSelectInit " + startingPoint);
+    $("#end_selector").empty();
+    for (var i = startingPoint; i < current.text.length; i++) {
+      helper_addOption(i, current.text[i],"end_selector");
+    };
+
+    $("#end_selector").val(currentOption);
+
+  }
+
   //Starting Line:<select>
   $("#line_selector").change(function(){
     var newStartingPoint = parseInt($("#line_selector option:selected").val());
     //console.log($("#line_selector option:selected").val());
     current.userSelectedStart = newStartingPoint;
-    //console.log(newStartingPoint);
+    endSelectInit(newStartingPoint);
     testPicker();
   });
   for (var i = 0; i < current.text.length; i++) {
-    $("<option value=\""+i+"\">" + i + (i>9?" ":"&nbsp;&nbsp;&nbsp;") + current.text[i] + "</option>").appendTo("#line_selector");
+    helper_addOption(i, current.text[i], "line_selector");
+    //$("<option value=\""+i+"\">" + i + (i>9?" ":"&nbsp;&nbsp;&nbsp;") + current.text[i] + "</option>").appendTo("#line_selector");
   };
+  $("#line_selector").change();
+  $("#end_selector").val(current.text.length-1);
+
 
   //<checkbox> Test mode
   $("#test_mode").change(function () {
@@ -346,8 +365,9 @@ testPicker();
 
       </div>
       <div id="controls">
-        <span>Starting Line: </span><select id="line_selector">
-        <option value="-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(random line)</option>
+        <span>Starting Line: </span><select id="line_selector" class="line_selector">
+        </select> <br />
+        <span>Ending Line: </span><select id="end_selector" class="line_selector">
         </select> <br />
         <input id="test_mode" type="checkbox" name="testmode"/><span>Test mode</span>
         <br /><span id="interval"></span>

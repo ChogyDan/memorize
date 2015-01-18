@@ -135,8 +135,8 @@ _nextItem = function() {
     for (var g = 0; g < this.text.length; g++) {
       newInternalVariance = this.internalTime - this.internalTimeTested[g] - this.internalTimeInterval[g];
       newVariance = Date.now() - this.timeLastTested[g] - this.getTargetIntervalOf(g); 
-      console.log("this.internalTime: "+this.internalTime + " this.internalTimeTested: " + this.internalTimeTested[g]);
-      console.log("#" + g + " time var: " + newVariance + " internal var: " + newInternalVariance + " absolute internal: " + this.internalTimeInterval[g]);
+      //console.log("this.internalTime: "+this.internalTime + " this.internalTimeTested: " + this.internalTimeTested[g]);
+      //console.log("#" + g + " time var: " + newVariance + " internal var: " + newInternalVariance + " absolute internal: " + this.internalTimeInterval[g]);
       if(newVariance >= 0 && newInternalVariance >= 0){ //this means 'g' is ready to be tested from an external
                                                       // time and internal time perspective.
         if(newInternalVariance < results[bi][internalVar] || results[bi][index] == -1){
