@@ -190,6 +190,7 @@ function handleResult(correctness, line, time) {
 
 {//strategyObject scope
 var strategyObject;
+var maybeClicks = 0;
 /*$("#submit").click(function (e) {
   handleResult(strategyObject.checkCorrectButton(), strategyObject.line, strategyObject.timeAsked);
   testPicker();
@@ -199,9 +200,9 @@ for (var i = 1; i <= 4; i++) {
     var buttonclicked = $(this).data('button');
     var correctness = strategyObject.checkCorrectButton(buttonclicked);
 
-    handleResult(correctness,  strategyObject.line, strategyObject.timeAsked);
-
     if(correctness){
+      current.registerResult(strategyObject.line, strategyObject.timeAsked, maybeClicks);
+      maybeClicks = 0;
       if($("#test_mode").attr('checked') == 'checked') {
         //increment testModePos
         testModePos += 1;
@@ -214,15 +215,18 @@ for (var i = 1; i <= 4; i++) {
           $("#test_mode").attr('checked', false).change();
         } 
       }
-
       testPicker();
     } else {
       $(this).html("");
+      maybeClicks += 1;
     }
-
-
-
   }).data('button', i);
+  $("#maybe"+i).click(function (){
+    maybeClicks += 1;
+    $("#button"+$(this).data('maybe')).click();
+  }).data('maybe', i);
+
+
 
 };
 function testPicker() {
@@ -310,7 +314,6 @@ function mainInit() {
   function endSelectInit(startingPoint) {
     var currentOption = parseInt($("#end_selector option:selected").val());
     if( currentOption < startingPoint ) currentOption = startingPoint; 
-    console.log("endSelectInit " + startingPoint);
     $("#end_selector").empty();
     for (var i = startingPoint; i < current.text.length; i++) {
       helper_addOption(i, current.text[i],"end_selector");

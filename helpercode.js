@@ -132,7 +132,6 @@ _nextItem = function(start, end) {
   var results = [[-1,0,1],[-1,0,1],[-1,0,1],[-1,0,1]];
 
   for (var g = start; g < end+1; g++) {
-    console.log(g);
     newInternalVariance = this.internalTime - this.internalTimeTested[g] - this.internalTimeInterval[g];
     newVariance = Date.now() - this.timeLastTested[g] - this.getTargetIntervalOf(g); 
     //console.log("this.internalTime: "+this.internalTime + " this.internalTimeTested: " + this.internalTimeTested[g]);
@@ -166,20 +165,19 @@ _nextItem = function(start, end) {
         results[none][internalVar] =  newInternalVariance;
       }
     }
-    
   };
-  console.log(results);
+
   if(results[bi][index] != -1){
-    console.log("bicandidate found! " + results[bi]);
+    //console.log("bicandidate found! " + results[bi]);
     return results[bi][index];
   } else if (results[time][index] != -1) {
-    console.log("time candidate found! " + results[time]);
+    //console.log("time candidate found! " + results[time]);
     return results[time][index];
   } else if (results[internal][index] != -1) {
-    console.log("internal candidate found! " + results[internal]);
+    //console.log("internal candidate found! " + results[internal]);
     return results[internal][index] ;
   } else {
-    console.log("none found! " + results[none]);
+    //console.log("none found! " + results[none]);
     return results[none][index] ;
   }
 }
@@ -190,19 +188,17 @@ _registerResult = function(line, time, score) {
   this.timeLastTested[line] = time;
   this.internalTimeTested[line] = this.internalTime;
   this.internalTime += 1;
-  if(score > 0) {
-    console.log("repeats " + this.repeat[line]);
-    if(this.repeat[line] == 0) {
+  this.repeat[line] += score;
+  if(this.repeat[line] == 0) {
+    if(timeIntervalBeaten){
       this.level[line] += 1;
-      if(internalTimeIntervalBeaten) {
-        this.internalTimeInterval[line] += 1;
-      }
-    } else {
-      this.repeat[line] -= 1;
+    }
+    if(internalTimeIntervalBeaten) {
+      this.internalTimeInterval[line] += 1;
     }
   } else {
-    this.repeat[line] += 1; //TODO increase this based on scoring? probably should.
-  }  
+    this.repeat[line] -= 1;
+  }
 }
 
 _getIntervalOf = function(line) {
