@@ -336,7 +336,10 @@ function mainInit() {
     //$("<option value=\""+i+"\">" + i + (i>9?" ":"&nbsp;&nbsp;&nbsp;") + current.text[i] + "</option>").appendTo("#line_selector");
   };
   $("#line_selector").change();
-  $("#end_selector").val(current.text.length-1);
+  $("#end_selector").val(current.text.length-1).change(function(){
+    testPicker();
+  });
+
 
 
   //<checkbox> Test mode
