@@ -1,20 +1,10 @@
 
-- fix or get rid of test mode
-
--- maybe decide how confident one is in an answer?
-
 LET THE USER COMMUNICATE WITH THE APP!!!
 - how confident you are in an answer
 - where you want to focus
 - got distracted, new question?
 - retest an area, to see how well you know it
 - specify answers that you tend to confuse
-
-AND of course, track the current interval, auto increase the intervals, this stuff has been done.
-
-- formulate an internal timing structure, with 1 question attempt as one tick, or maybe each question as one tick (I think second)
-- -just have an option, or maybe a switch? between earth times and app times.
-- - have the feedback area be switchable as well
 
 
 - set up a more general form, in the style of machine learning
