@@ -129,9 +129,8 @@ var pairOneBlank = {
     //console.log("this.display " + this.display);
 
 
-    results = randoms_MaxWith(this.text.length-1, this.line);
-    randoms = results[0];
-    this.correctButton = results[1];
+    randoms = generateChoices(this.line, this.line, this.line+1, parseInt($("#line_selector option:selected").val()), parseInt($("#end_selector option:selected").val()), this.text.length);
+    this.correctButton = _.indexOf(randoms, this.line);
     for (var i = 0; i < 4; i++) {
       this.buttonNames[i] = this.text[randoms[i]].split(this.separator,2)[this.leftRight];
     };

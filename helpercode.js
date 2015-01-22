@@ -241,22 +241,45 @@ function removeMem(index) {
   saveMems(mems);
 }
 
-function randoms_MaxWith(max, toContain) {
-	var size = 4;
-	var randomsArray = [];
-	var correctLocation = _.random(size-1);
-	randomsArray[correctLocation] = toContain;
-	for (var i = 0; i < size; i++) {
-		if(i == correctLocation) {
-			continue;
-		}
-		do {
-			possibleRandom = _.random(max);
-		} while (_.indexOf(randomsArray, possibleRandom) != -1)
-		randomsArray[i] = possibleRandom;
-	};
-	//console.log("toContain is " + toContain + " and return array is " + randomsArray);
-	return [randomsArray, correctLocation];
+function generateChoices(answer, displayedBottom, displayedTop, sectionBottom, sectionTop, textLength) {
+  console.log("answer, displayedBottom, displayedTop, sectionBottom, sectionTop, textLength: "+ answer + " " + displayedBottom + " " + displayedTop + " " + sectionBottom + " " + sectionTop + " " + textLength);
+  var size = 4;
+  var spreadIncrease = 2;// amount to increase the spread of selected elements.  Makes it more random
+  if( textLength < size ) {
+    console.log("WARNING: small text detected.  This isn't handled, sorry.");
+    return [answer,answer,answer,answer];
+  }
+  var candidates = [], deferred = [];
+  for ( var up = answer+1, down = answer-1; candidates.length < size-1+spreadIncrease; up++, down-- ) {
+    if(up < textLength) {
+      if(up >= displayedTop && up < sectionTop){
+        candidates.push(up);
+      } else {
+        deferred.push(up);
+      }
+    }
+    if( down >= 0 ) { 
+      if(down < displayedBottom && down >= sectionBottom) {
+        candidates.push(down);
+      } else {
+        deferred.push(down);
+      }
+    }
+    if( up >= sectionTop && down < sectionBottom ) {
+      if( deferred.length > 0 ){
+        candidates.push(deferred.shift());
+      } else {
+        if( candidates.length >= size-1 ){
+          break;
+        }
+        candidates.push(candidates[1]); //if the text is small enough that even deferred[] doesn't have enough elements,just repeat one of them
+        console.log("WARNING: repeating answer choices.  Text size must be not much larger than what is already being displayed.");
+      }
+    }
+  };
+  candidates = _.sample(candidates,3);
+  candidates.push(answer);
+  return _.shuffle(candidates);
 }
 
 //SCORING
