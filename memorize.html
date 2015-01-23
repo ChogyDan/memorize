@@ -225,8 +225,8 @@ for (var i = 1; i <= 4; i++) {
   }).data('button', i);
   $("#maybe"+i).click(function (){
     maybeClick = true;
-    $("#button"+$(this).data('maybe')).click();
-  }).data('maybe', i);
+    $("#button"+$(this).data('associatedButton')).click();
+  }).data('associatedButton', i);
 
 
 
