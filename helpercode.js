@@ -170,12 +170,12 @@ _nextItem = function(start, end) {
   if(results[bi][index] != -1){
     //console.log("bicandidate found! " + results[bi]);
     return results[bi][index];
-  } else if (results[time][index] != -1) {
-    //console.log("time candidate found! " + results[time]);
-    return results[time][index];
   } else if (results[internal][index] != -1) {
+    //console.log("time candidate found! " + results[time]);
+    return results[internal][index];
+  } else if (results[time][index] != -1) {
     //console.log("internal candidate found! " + results[internal]);
-    return results[internal][index] ;
+    return results[time][index] ;
   } else {
     //console.log("none found! " + results[none]);
     return results[none][index] ;
@@ -194,7 +194,7 @@ _registerResult = function(line, time, score) {
       this.level[line] += 1;
     }
     if(internalTimeIntervalBeaten) {
-      this.internalTimeInterval[line] += 1;
+      this.internalTimeInterval[line] = _.min([this.internalTimeInterval[line] + 1, 7]);//increase internalTimeInterval to a max of 7
     }
   } else {
     this.repeat[line] -= 1;
@@ -242,7 +242,7 @@ function removeMem(index) {
 }
 
 function generateChoices(answer, displayedBottom, displayedTop, sectionBottom, sectionTop, textLength) {
-  console.log("answer, displayedBottom, displayedTop, sectionBottom, sectionTop, textLength: "+ answer + " " + displayedBottom + " " + displayedTop + " " + sectionBottom + " " + sectionTop + " " + textLength);
+  //console.log("answer, displayedBottom, displayedTop, sectionBottom, sectionTop, textLength: "+ answer + " " + displayedBottom + " " + displayedTop + " " + sectionBottom + " " + sectionTop + " " + textLength);
   var size = 4;
   var spreadIncrease = 2;// amount to increase the spread of selected elements.  Makes it more random
   if( textLength < size ) {

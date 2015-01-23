@@ -1,3 +1,8 @@
+- double check that internal intervals are preferred over timings.
+
+- make it so that getting the answer wrong is worse than guessing the answer wrong.
+
+- keep a test history, keep recently tested out?
 
 LET THE USER COMMUNICATE WITH THE APP!!!
 - how confident you are in an answer
