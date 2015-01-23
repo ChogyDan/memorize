@@ -194,7 +194,7 @@ _registerResult = function(line, time, score) {
       this.level[line] += 1;
     }
     if(internalTimeIntervalBeaten) {
-      this.internalTimeInterval[line] = _.min([this.internalTimeInterval[line] + 1, 7]);//increase internalTimeInterval to a max of 7
+      this.internalTimeInterval[line] = this.internalTimeInterval[line] + 1;
     }
   } else {
     this.repeat[line] -= 1;
