@@ -189,7 +189,8 @@ function handleResult(correctness, line, time) {
 
 {//strategyObject scope
 var strategyObject;
-var maybeClicks = 0;
+var score = 0;
+var maybeClick = false;
 /*$("#submit").click(function (e) {
   handleResult(strategyObject.checkCorrectButton(), strategyObject.line, strategyObject.timeAsked);
   testPicker();
@@ -200,8 +201,9 @@ for (var i = 1; i <= 4; i++) {
     var correctness = strategyObject.checkCorrectButton(buttonclicked);
 
     if(correctness){
-      current.registerResult(strategyObject.line, strategyObject.timeAsked, maybeClicks);
-      maybeClicks = 0;
+      score += maybeClick ? 1 : 0;
+      current.registerResult(strategyObject.line, strategyObject.timeAsked, score);
+      score = 0;
       if($("#test_mode").attr('checked') == 'checked') {
         //increment testModePos
         testModePos += 1;
@@ -217,11 +219,12 @@ for (var i = 1; i <= 4; i++) {
       testPicker();
     } else {
       $(this).html("");
-      maybeClicks += 1;
+      score += maybeClick ? 0.5 : 1;
     }
+    maybeClick = false;
   }).data('button', i);
   $("#maybe"+i).click(function (){
-    maybeClicks += 1;
+    maybeClick = true;
     $("#button"+$(this).data('maybe')).click();
   }).data('maybe', i);
 
