@@ -49,9 +49,8 @@ var oddManOut = {
     };
     this.display = this.display.join("\n");    
 
-    results = randoms_MaxWith(this.text.length-1, this.line);
-    randoms = results[0];
-    this.correctButton = results[1];
+    randoms = generateChoices(this.line, contextStart, contextEnd, parseInt($("#line_selector option:selected").val()), parseInt($("#end_selector option:selected").val()), this.text.length);
+    this.correctButton = _.indexOf(randoms, this.line);
     for (var i = 0; i < 4; i++) {
       this.buttonNames[i] = this.text[randoms[i]];
     };
@@ -222,6 +221,7 @@ for (var i = 1; i <= 4; i++) {
       score += maybeClick ? 0.5 : 1;
     }
     maybeClick = false;
+    saveMem(current);
   }).data('button', i);
   $("#maybe"+i).click(function (){
     maybeClick = true;

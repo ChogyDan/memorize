@@ -199,6 +199,7 @@ _registerResult = function(line, time, score) {
   } else {
     this.repeat[line] -= 1;
   }
+  console.log(this.internalTimeInterval[line]+ " is the internal interval of line " + line + " with a time intervel level of " + this.level[line]);
 }
 
 _getIntervalOf = function(line) {

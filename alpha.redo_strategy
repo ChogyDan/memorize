@@ -1,8 +1,12 @@
-- double check that internal intervals are preferred over timings.
+- have repeats reduce the timings?
 
-- make it so that getting the answer wrong is worse than guessing the answer wrong.
+- add a confirmation to deleting texts,  or somehow make it harder.  It is way too way to easy as it is.
+- - also, protect from multiple clicks of delete.  As it is, you could hit delete several times and nuke several texts.
+- - maybe make an in page dialog, "Are you sure? (yes) (no)"
 
-- keep a test history, keep recently tested out?
+- when a wrong answer is guessed, add some repetition to wrong answer guessed, not just the current question.
+
+- keep a test history, keep recently tested out? (ie, don't put the answer to a last question that you got correct into the answer list of the next question)
 
 LET THE USER COMMUNICATE WITH THE APP!!!
 - how confident you are in an answer
