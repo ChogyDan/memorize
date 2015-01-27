@@ -132,7 +132,7 @@ _nextItem = function(start, end) {
   var results = [[-1,0,1],[-1,0,1],[-1,0,1],[-1,0,1]];
 
   for (var g = start; g < end+1; g++) {
-    newInternalVariance = this.internalTime - this.internalTimeTested[g] - this.internalTimeInterval[g];
+    newInternalVariance = this.internalTime - this.internalTimeTested[g] - _.max([0, this.internalTimeInterval[g] - this.repeat[g]]);
     newVariance = Date.now() - this.timeLastTested[g] - this.getAdjustedTargetIntervalOf(g); 
     //console.log("this.internalTime: "+this.internalTime + " this.internalTimeTested: " + this.internalTimeTested[g]);
     //console.log("#" + g + " time var: " + newVariance + " internal var: " + newInternalVariance + " absolute internal: " + this.internalTimeInterval[g]);
