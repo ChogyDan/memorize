@@ -78,7 +78,7 @@ function setupIOMFunctions (IOM) {
   IOM.registerResult = _registerResult;
   IOM.getIntervalOf = _getIntervalOf;
   IOM.getTargetIntervalOf = _getTargetIntervalOf;
-
+  IOM.getAdjustedTargetIntervalOf = _getAdjustedTargetIntervalOf;
 }
 
 /* old functional functions that are currently unused
@@ -133,7 +133,7 @@ _nextItem = function(start, end) {
 
   for (var g = start; g < end+1; g++) {
     newInternalVariance = this.internalTime - this.internalTimeTested[g] - this.internalTimeInterval[g];
-    newVariance = Date.now() - this.timeLastTested[g] - this.getTargetIntervalOf(g); 
+    newVariance = Date.now() - this.timeLastTested[g] - this.getAdjustedTargetIntervalOf(g); 
     //console.log("this.internalTime: "+this.internalTime + " this.internalTimeTested: " + this.internalTimeTested[g]);
     //console.log("#" + g + " time var: " + newVariance + " internal var: " + newInternalVariance + " absolute internal: " + this.internalTimeInterval[g]);
     if(newVariance >= 0 && newInternalVariance >= 0){ //this means 'g' is ready to be tested from an external
@@ -211,6 +211,12 @@ _getIntervalOf = function(line) {
 
 _getTargetIntervalOf = function(line) {
   return intervals[Math.floor(this.level[line])];
+}
+
+_getAdjustedTargetIntervalOf = function(line) {
+  var intervalIndex = Math.floor(this.level[line]-this.repeat[line]);
+  if(intervalIndex < 0) intervalIndex = 0;
+  return intervals[intervalIndex];
 }
 
 function addNewMem(newMem) {
