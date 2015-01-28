@@ -1,4 +1,4 @@
-- have repeats reduce the timings?
+- make it so wrong answers clicked get a bump in their respective repeat metrics.
 
 - add a confirmation to deleting texts,  or somehow make it harder.  It is way too way to easy as it is.
 - - also, protect from multiple clicks of delete.  As it is, you could hit delete several times and nuke several texts.

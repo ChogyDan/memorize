@@ -200,7 +200,7 @@ for (var i = 1; i <= 4; i++) {
     var correctness = strategyObject.checkCorrectButton(buttonclicked);
 
     if(correctness){
-      score += maybeClick ? 1 : 0;
+      score += maybeClick ? 1.5 : 0;
       current.registerResult(strategyObject.line, strategyObject.timeAsked, score);
       score = 0;
       if($("#test_mode").attr('checked') == 'checked') {
@@ -298,7 +298,7 @@ function testPicker() {
 }//end of strategyObject scope
 
 function helper_addOption(value, lineText, elementID){
-  $("<option value=\""+value+"\">" + value + (value>9?" ":"&nbsp;&nbsp;&nbsp;") + lineText + "</option>").appendTo("#"+elementID);
+  $("<option value=\""+value+"\">" + value + (value<9?"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;": value < 99 ?"&nbsp;&nbsp;&nbsp;" : " ") + lineText + "</option>").appendTo("#"+elementID);
 }
 var testText;
 var testTitle;
