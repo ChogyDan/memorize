@@ -274,7 +274,7 @@ function generateChoices(answer, displayedBottom, displayedTop, sectionBottom, s
     }
     if( up >= sectionTop && down < sectionBottom ) {
       if( deferred.length > 0 ){
-        candidates.push(deferred.shift());
+        candidates.push(deferred.pop());
       } else {
         if( candidates.length >= size-1 ){
           break;
